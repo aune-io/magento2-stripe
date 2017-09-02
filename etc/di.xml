@@ -1,0 +1,281 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Payment Method Facade configuration -->
+    <virtualType name="AuneStripeFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">Aune\Stripe\Model\Ui\ConfigProvider::CODE</argument>
+            <argument name="formBlockType" xsi:type="string">Aune\Stripe\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">Aune\Stripe\Block\Info</argument>
+            <argument name="valueHandlerPool" xsi:type="object">AuneStripeValueHandlerPool</argument>
+            <argument name="validatorPool" xsi:type="object">AuneStripeValidatorPool</argument>
+            <argument name="commandPool" xsi:type="object">AuneStripeCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Configuration for Vault payments -->
+    <virtualType name="AuneStripeVaultPaymentConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">Aune\Stripe\Model\Ui\ConfigProvider::VAULT_CODE</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="AuneStripeVaultPaymentValueHandler" type="VaultPaymentDefaultValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">AuneStripeVaultPaymentConfig</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="AuneStripeVaultPaymentValueHandlerPool" type="VaultPaymentValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">AuneStripeVaultPaymentValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="AuneStripeVaultFacade" type="Magento\Vault\Model\Method\Vault">
+        <arguments>
+            <argument name="config" xsi:type="object">AuneStripeVaultPaymentConfig</argument>
+            <argument name="valueHandlerPool" xsi:type="object">AuneStripeVaultPaymentValueHandlerPool</argument>
+            <argument name="vaultProvider" xsi:type="object">AuneStripeFacade</argument>
+            <argument name="code" xsi:type="const">Aune\Stripe\Model\Ui\ConfigProvider::VAULT_CODE</argument>
+        </arguments>
+    </virtualType>
+    <!-- END Configuration for Vault payments -->
+
+    <!-- Configuration reader -->
+    <type name="Aune\Stripe\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">Aune\Stripe\Model\Ui\ConfigProvider::CODE</argument>
+        </arguments>
+    </type>
+
+    <!-- Logger, initialized with AuneStripeConfig -->
+    <virtualType name="AuneStripeLoggerForClient" type="Magento\Payment\Model\Method\Logger">
+        <arguments>
+            <argument name="config" xsi:type="object">Aune\Stripe\Gateway\Config\Config</argument>
+        </arguments>
+    </virtualType>
+    <type name="Aune\Stripe\Gateway\Http\Client\Charge">
+        <arguments>
+            <argument name="customLogger" xsi:type="object">AuneStripeLoggerForClient</argument>
+        </arguments>
+    </type>
+    <type name="Aune\Stripe\Gateway\Http\Client\ChargeCapture">
+        <arguments>
+            <argument name="customLogger" xsi:type="object">AuneStripeLoggerForClient</argument>
+        </arguments>
+    </type>
+    <type name="Aune\Stripe\Gateway\Http\Client\ChargeRefund">
+        <arguments>
+            <argument name="customLogger" xsi:type="object">AuneStripeLoggerForClient</argument>
+        </arguments>
+    </type>
+    <!-- END Logger, initialized with AuneStripeConfig -->
+
+    <!-- Commands infrastructure -->
+    <virtualType name="AuneStripeCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="sale" xsi:type="string">AuneStripeSaleCommand</item>
+                <item name="authorize" xsi:type="string">AuneStripeAuthorizeCommand</item>
+                <item name="capture" xsi:type="string">AuneStripeCaptureStrategyCommand</item>
+                <item name="charge_capture" xsi:type="string">AuneStripeCaptureCommand</item>
+                <item name="vault_authorize" xsi:type="string">AuneStripeVaultAuthorizeCommand</item>
+                <item name="vault_capture" xsi:type="string">AuneStripeVaultCaptureCommand</item>
+                <item name="void" xsi:type="string">AuneStripeRefundCommand</item>
+                <item name="refund" xsi:type="string">AuneStripeRefundCommand</item>
+                <item name="cancel" xsi:type="string">AuneStripeRefundCommand</item>
+                <item name="deny_payment" xsi:type="string">AuneStripeRefundCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="AuneStripeCaptureStrategyCommand" type="Aune\Stripe\Gateway\Command\CaptureStrategyCommand">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">AuneStripeCommandPool</argument>
+        </arguments>
+    </virtualType>
+    <!-- END Commands infrastructure -->
+
+    <!-- Command managers section for Vault -->
+    <virtualType name="AuneStripeCommandManager" type="Magento\Payment\Gateway\Command\CommandManager">
+        <arguments>
+            <argument name="commandPool" xsi:type="object">AuneStripeCommandPool</argument>
+        </arguments>
+    </virtualType>
+    <type name="Magento\Payment\Gateway\Command\CommandManagerPool">
+        <arguments>
+            <argument name="executors" xsi:type="array">
+                <item name="aune_stripe" xsi:type="string">AuneStripeCommandManager</item>
+            </argument>
+        </arguments>
+    </type>
+    <!-- END command managers section for Vault -->
+
+    <!-- Commands  -->
+    <virtualType name="AuneStripeAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuneStripeAuthorizeRequest</argument>
+            <argument name="transferFactory" xsi:type="object">Aune\Stripe\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">Aune\Stripe\Gateway\Http\Client\Charge</argument>
+            <argument name="handler" xsi:type="object">AuneStripeAuthorizationHandler</argument>
+            <argument name="validator" xsi:type="object">Aune\Stripe\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="AuneStripeAuthorizeRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="payment" xsi:type="string">Aune\Stripe\Gateway\Request\PaymentDataBuilder</item>
+                <item name="source" xsi:type="string">Aune\Stripe\Gateway\Request\SourceDataBuilder</item>
+                <item name="idempotency" xsi:type="string">Aune\Stripe\Gateway\Request\IdempotencyDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <!-- Authorization & Capture commands  -->
+    <virtualType name="AuneStripeSaleCommand" type="AuneStripeAuthorizeCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuneStripeSaleRequest</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="AuneStripeSaleRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="authorize" xsi:type="string">AuneStripeAuthorizeRequest</item>
+                <item name="capture" xsi:type="string">Aune\Stripe\Gateway\Request\CaptureDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <!-- Capture commands  -->
+    <virtualType name="AuneStripeCaptureCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="transferFactory" xsi:type="object">Aune\Stripe\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">Aune\Stripe\Gateway\Http\Client\ChargeCapture</argument>
+            <argument name="requestBuilder" xsi:type="object">Aune\Stripe\Gateway\Request\ChargeCaptureDataBuilder</argument>
+            <argument name="handler" xsi:type="object">Aune\Stripe\Gateway\Response\ChargeIdHandler</argument>
+            <argument name="validator" xsi:type="object">Aune\Stripe\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+    <!-- Vault Authorization command -->
+    <virtualType name="AuneStripeVaultAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuneStripeVaultAuthorizeRequest</argument>
+            <argument name="transferFactory" xsi:type="object">Aune\Stripe\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">Aune\Stripe\Gateway\Http\Client\Charge</argument>
+            <argument name="handler" xsi:type="object">Aune\Stripe\Gateway\Response\ChargeIdHandler</argument>
+            <argument name="validator" xsi:type="object">Aune\Stripe\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="AuneStripeVaultAuthorizeRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="payment" xsi:type="string">Aune\Stripe\Gateway\Request\PaymentDataBuilder</item>
+                <item name="customer" xsi:type="string">Aune\Stripe\Gateway\Request\CustomerDataBuilder</item>
+                <item name="idempotency" xsi:type="string">Aune\Stripe\Gateway\Request\IdempotencyDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <!-- Vault Authorization & Capture commands -->
+    <virtualType name="AuneStripeVaultSaleCommand" type="AuneStripeVaultAuthorizeCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">AuneStripeVaultSaleRequest</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="AuneStripeVaultSaleRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="authorize" xsi:type="string">AuneStripeVaultAuthorizeRequest</item>
+                <item name="capture" xsi:type="string">Aune\Stripe\Gateway\Request\CaptureDataBuilder</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <!-- Vault Capture command -->
+    <virtualType name="AuneStripeVaultCaptureCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="transferFactory" xsi:type="object">Aune\Stripe\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">Aune\Stripe\Gateway\Http\Client\ChargeCapture</argument>
+            <argument name="requestBuilder" xsi:type="object">Aune\Stripe\Gateway\Request\ChargeCaptureDataBuilder</argument>
+            <argument name="handler" xsi:type="object">Aune\Stripe\Gateway\Response\ChargeIdHandler</argument>
+            <argument name="validator" xsi:type="object">Aune\Stripe\Gateway\Validator\ResponseValidator</argument>
+        </arguments>
+    </virtualType>
+    <!-- END commands  -->
+
+    <!-- Value handlers infrastructure -->
+    <type name="Aune\Stripe\Gateway\Response\VaultDetailsHandler">
+        <arguments>
+            <argument name="paymentTokenFactory" xsi:type="object">Magento\Vault\Model\CreditCardTokenFactory</argument>
+        </arguments>
+    </type>
+    <virtualType name="AuneStripeValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">AuneStripeConfigValueHandler</item>
+                <item name="can_void" xsi:type="string">Aune\Stripe\Gateway\Config\CanVoidHandler</item>
+                <item name="can_cancel" xsi:type="string">Aune\Stripe\Gateway\Config\CanVoidHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="AuneStripeConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">Aune\Stripe\Gateway\Config\Config</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="AuneStripeAuthorizationHandler" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="payment_details" xsi:type="string">Aune\Stripe\Gateway\Response\PaymentDetailsHandler</item>
+                <item name="txn_id" xsi:type="string">Aune\Stripe\Gateway\Response\ChargeIdHandler</item>
+                <item name="card_details" xsi:type="string">Aune\Stripe\Gateway\Response\CardDetailsHandler</item>
+                <item name="vault_details" xsi:type="string">Aune\Stripe\Gateway\Response\VaultDetailsHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="AuneStripeVaultResponseHandler" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="payment_details" xsi:type="string">Aune\Stripe\Gateway\Response\PaymentDetailsHandler</item>
+                <item name="txn_id" xsi:type="string">Aune\Stripe\Gateway\Response\ChargeIdHandler</item>
+                <item name="card_details" xsi:type="string">Aune\Stripe\Gateway\Response\CardDetailsHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <!-- END Value handlers infrastructure -->
+
+    <!-- Refund Command -->
+    <virtualType name="AuneStripeRefundCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="transferFactory" xsi:type="object">Aune\Stripe\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">Aune\Stripe\Gateway\Http\Client\ChargeRefund</argument>
+            <argument name="requestBuilder" xsi:type="object">Aune\Stripe\Gateway\Request\RefundDataBuilder</argument>
+            <argument name="validator" xsi:type="object">Aune\Stripe\Gateway\Validator\GeneralResponseValidator</argument>
+            <argument name="handler" xsi:type="object">Aune\Stripe\Gateway\Response\RefundHandler</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Validators infrastructure -->
+    <virtualType name="AuneStripeCountryValidator" type="Magento\Payment\Gateway\Validator\CountryValidator">
+        <arguments>
+            <argument name="config" xsi:type="object">Aune\Stripe\Gateway\Config\Config</argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="AuneStripeValidatorPool" type="Magento\Payment\Gateway\Validator\ValidatorPool">
+        <arguments>
+            <argument name="validators" xsi:type="array">
+                <item name="country" xsi:type="string">AuneStripeCountryValidator</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <!-- END Validators infrastructure -->
+
+    <type name="Aune\Stripe\Block\Info">
+        <arguments>
+            <argument name="config" xsi:type="object">Aune\Stripe\Gateway\Config\Config</argument>
+        </arguments>
+    </type>
+
+    <type name="Magento\Config\Model\Config\Export\ExcludeList">
+        <arguments>
+            <argument name="configs" xsi:type="array">
+                <item name="payment/aune_stripe/publishable_key" xsi:type="string">1</item>
+                <item name="payment/aune_stripe/secret_key" xsi:type="string">1</item>
+            </argument>
+        </arguments>
+    </type>
+</config>

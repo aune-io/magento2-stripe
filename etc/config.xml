@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Store:etc/config.xsd">
+    <default>
+        <payment>
+            <aune_stripe>
+                <model>AuneStripeFacade</model>
+                <title>Credit Card (Stripe)</title>
+                <payment_action>authorize</payment_action>
+                <active>0</active>
+                <is_gateway>1</is_gateway>
+                <can_use_checkout>1</can_use_checkout>
+                <can_authorize>1</can_authorize>
+                <can_capture>1</can_capture>
+                <can_capture_partial>1</can_capture_partial>
+                <can_authorize_vault>1</can_authorize_vault>
+                <can_capture_vault>1</can_capture_vault>
+                <can_use_internal>1</can_use_internal>
+                <can_refund_partial_per_invoice>1</can_refund_partial_per_invoice>
+                <can_refund>1</can_refund>
+                <can_void>1</can_void>
+                <can_cancel>1</can_cancel>
+                <can_edit>1</can_edit>
+                <can_review_payment>1</can_review_payment>
+                <can_deny_payment>1</can_deny_payment>
+                <order_status>processing</order_status>
+                <sdk_url><![CDATA[https://js.stripe.com/v3/]]></sdk_url>
+                <cctypes_stripe_mapper><![CDATA[{"american-express":"AE","discover":"DI","jcb":"JCB","master-card":"MC","visa":"VI","diners-club":"DN"}]]></cctypes_stripe_mapper>
+                <paymentInfoKeys>source,outcome_seller_message,failure_code,failure_message,outcome_type,outcome_network_status,outcome_risk_level,cc_type,cc_number</paymentInfoKeys>
+                <privateInfoKeys>source,outcome_seller_message,failure_code,failure_message,outcome_type,outcome_network_status,outcome_risk_level</privateInfoKeys>
+            </aune_stripe>
+            <aune_stripe_vault>
+                <model>AuneStripeVaultFacade</model>
+                <title>Stored Cards (Stripe)</title>
+                <paymentInfoKeys>source,outcome_seller_message,failure_code,failure_message,outcome_type,outcome_network_status,outcome_risk_level,cc_type,cc_number</paymentInfoKeys>
+                <privateInfoKeys>source,outcome_seller_message,failure_code,failure_message,outcome_type,outcome_network_status,outcome_risk_level</privateInfoKeys>
+            </aune_stripe_vault>
+        </payment>
+    </default>
+</config>

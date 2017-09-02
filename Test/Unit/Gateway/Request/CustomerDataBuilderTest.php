@@ -64,6 +64,7 @@ class CustomerDataBuilderTest extends \PHPUnit_Framework_TestCase
             ->getMock();
         $this->paymentExtensionMock = $this->getMockBuilder(OrderPaymentExtensionInterface::class)
             ->disableOriginalConstructor()
+            ->setMethods(['getVaultPaymentToken'])
             ->getMock();
         $this->paymentTokenMock = $this->getMockBuilder(PaymentTokenInterface::class)
             ->disableOriginalConstructor()

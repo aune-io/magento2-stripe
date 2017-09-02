@@ -13,7 +13,7 @@ install:
 
 script:
     - php marketplace-eqp/vendor/bin/phpcs Block/ Gateway/ Model/ Observer/ Test/ view/  --standard=MEQP2 --severity=10
-    - php vendor/bin/phpmd Block/,Gateway/,Model/,Observer/,Test/,view/ text cleancode,codesize,controversial,design,naming,unusedcode
+    #- php vendor/bin/phpmd Block/,Gateway/,Model/,Observer/,Test/,view/ text cleancode,codesize,controversial,design,naming,unusedcode
     - php vendor/phpunit/phpunit/phpunit Test
 
 env:

@@ -124,7 +124,6 @@
             <argument name="builders" xsi:type="array">
                 <item name="payment" xsi:type="string">Aune\Stripe\Gateway\Request\PaymentDataBuilder</item>
                 <item name="source" xsi:type="string">Aune\Stripe\Gateway\Request\SourceDataBuilder</item>
-                <item name="idempotency" xsi:type="string">Aune\Stripe\Gateway\Request\IdempotencyDataBuilder</item>
             </argument>
         </arguments>
     </virtualType>
@@ -167,7 +166,6 @@
             <argument name="builders" xsi:type="array">
                 <item name="payment" xsi:type="string">Aune\Stripe\Gateway\Request\PaymentDataBuilder</item>
                 <item name="customer" xsi:type="string">Aune\Stripe\Gateway\Request\CustomerDataBuilder</item>
-                <item name="idempotency" xsi:type="string">Aune\Stripe\Gateway\Request\IdempotencyDataBuilder</item>
             </argument>
         </arguments>
     </virtualType>

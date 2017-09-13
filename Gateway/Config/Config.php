@@ -10,7 +10,6 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     const KEY_ACTIVE = 'active';
     const KEY_PUBLISHABLE_KEY = 'publishable_key';
     const KEY_SECRET_KEY = 'secret_key';
-    const KEY_IDEMPOTENCY_KEY_PREFIX = 'idempotency_key_prefix';
     const KEY_STORE_CUSTOMER = 'store_customer';
     const KEY_SDK_URL = 'sdk_url';
     const KEY_CC_TYPES_STRIPE_MAPPER = 'cctypes_stripe_mapper';
@@ -66,16 +65,6 @@ class Config extends \Magento\Payment\Gateway\Config\Config
     {
         $value = $this->getValue(self::KEY_SECRET_KEY);
         return $value ? $this->encryptor->decrypt($value) : $value;
-    }
-    
-    /**
-     * Get idempotency key prefix
-     * 
-     * @return string
-     */
-    public function getIdempotencyKeyPrefix()
-    {
-        return $this->getValue(self::KEY_IDEMPOTENCY_KEY_PREFIX);
     }
     
     /**

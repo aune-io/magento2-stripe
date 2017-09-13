@@ -35,14 +35,7 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
-                <field id="idempotency_key_prefix" translate="label" type="text" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
-                    <label>Idempotency Key Prefix</label>
-                    <comment>The order increment id will be used as idempotency key. Specify a prefix if you have multiple stores configured to use the same Stripe account.</comment>
-                    <depends>
-                        <field id="active">1</field>
-                    </depends>
-                </field>
-                <field id="store_customer" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="store_customer" translate="label" type="select" sortOrder="60" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Store Customer</label>
                     <comment>Create customer entity in Stripe (mandatory to enable the vault).</comment>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
@@ -50,7 +43,7 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
-                <field id="aune_stripe_vault_active" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="aune_stripe_vault_active" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Vault Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>payment/aune_stripe_vault/active</config_path>

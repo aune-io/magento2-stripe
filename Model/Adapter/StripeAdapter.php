@@ -15,6 +15,7 @@ class StripeAdapter
     const MODULE_NAME = 'Aune_Stripe';
     const APPLICATION_NAME = 'AuneStripeM2';
     const APPLICATION_URL = 'https://gitbub.com/aune/magento2-stripe';
+    const API_VERSION = '2017-08-15';
     
     /**
      * @var Config
@@ -57,6 +58,9 @@ class StripeAdapter
         
         // Set secret key
         $this->setApiKey($this->config->getSecretKey());
+        
+        // Pinpoint API version
+        $this->setApiVersion(self::API_VERSION);
     }
     
     /**
@@ -79,6 +83,16 @@ class StripeAdapter
     public function setAppInfo($applicationName, $applicationVersion, $applicationUrl)
     {
         return Stripe::setAppInfo($applicationName, $applicationVersion, $applicationUrl);
+    }
+    
+    /**
+     * @param string|null $value
+     * 
+     * @return mixed
+     */
+    public function setApiVersion($value = null)
+    {
+        return Stripe::setApiVErsion($value);
     }
 
     /**

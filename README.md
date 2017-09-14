@@ -2,6 +2,7 @@
 Stripe payments integration module for Magento 2.
 
 [![Build Status](https://travis-ci.org/aune-io/magento2-stripe.svg?branch=master)](https://travis-ci.org/aune-io/magento2-stripe)
+[![Coverage Status](https://coveralls.io/repos/aune-io/magento2-stripe/badge.svg?branch=master&service=github)](https://coveralls.io/github/aune-io/magento2-stripe?branch=master)
 [![Latest Stable Version](https://poser.pugx.org/aune-io/magento2-stripe/v/stable)](https://packagist.org/packages/aune-io/magento2-stripe)
 [![Latest Unstable Version](https://poser.pugx.org/aune-io/magento2-stripe/v/unstable)](https://packagist.org/packages/aune-io/magento2-stripe)
 [![Total Downloads](https://poser.pugx.org/aune-io/magento2-stripe/downloads)](https://packagist.org/packages/aune-io/magento2-stripe)

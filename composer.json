@@ -20,7 +20,8 @@
         "magento/module-vault": "100.2.*",
         "magento/module-quote": "100.1.*",
         "magento/module-ui": "100.1.*",
-        "stripe/stripe-php": "~5.1.1"
+        "stripe/stripe-php": "~5.1.1",
+        "satooshi/php-coveralls": "^1.0"
     },
     "require-dev": {
         "phpunit/phpunit": "4.1.0",

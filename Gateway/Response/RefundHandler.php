@@ -30,13 +30,14 @@ class RefundHandler implements HandlerInterface
     public function handle(array $handlingSubject, array $response)
     {
         $paymentDO = $this->subjectReader->readPayment($handlingSubject);
-
-        if ($paymentDO->getPayment() instanceof Payment) {
+        
+        /** @var Payment $orderPayment */
+        $orderPayment = $paymentDO->getPayment();
+        
+        if ($orderPayment instanceof Payment) {
             /** @var \Stripe\Refund $refund */
             $refund = $this->subjectReader->readRefund($response);
 
-            /** @var Payment $orderPayment */
-            $orderPayment = $paymentDO->getPayment();
             $this->setRefundId(
                 $orderPayment,
                 $refund

@@ -28,6 +28,8 @@ class StripeAdapter
     private $moduleList;
 
     /**
+     * @codeCoverageIgnore
+     *
      * @param Config $config
      * @param ModuleListInterface $moduleList
      */
@@ -43,6 +45,8 @@ class StripeAdapter
 
     /**
      * Initializes credentials.
+     *
+     * @codeCoverageIgnore
      *
      * @return void
      */
@@ -64,8 +68,9 @@ class StripeAdapter
     }
     
     /**
-     * @param string|null $value
+     * @codeCoverageIgnore
      * 
+     * @param string|null $value
      * @return mixed
      */
     public function setApiKey($value = null)
@@ -74,10 +79,11 @@ class StripeAdapter
     }
     
     /**
+     * @codeCoverageIgnore
+     * 
      * @param string $applicationName
      * @param string $applicationVersion
      * @param string $applicationUrl
-     * 
      * @return mixed
      */
     public function setAppInfo($applicationName, $applicationVersion, $applicationUrl)
@@ -86,8 +92,9 @@ class StripeAdapter
     }
     
     /**
-     * @param string|null $value
+     * @codeCoverageIgnore
      * 
+     * @param string|null $value
      * @return mixed
      */
     public function setApiVersion($value = null)
@@ -96,8 +103,9 @@ class StripeAdapter
     }
 
     /**
-     * @param array $attributes
+     * @codeCoverageIgnore
      * 
+     * @param array $attributes
      * @return \Stripe\Customer|\Stripe\Error\Base
      */
     public function customerCreate(array $attributes)
@@ -106,8 +114,9 @@ class StripeAdapter
     }
 
     /**
-     * @param string $chargeId
+     * @codeCoverageIgnore
      * 
+     * @param string $chargeId
      * @return \Stripe\Charge|null
      */
     public function chargeRetrieve($chargeId)
@@ -120,8 +129,9 @@ class StripeAdapter
     }
 
     /**
-     * @param array $attributes
+     * @codeCoverageIgnore
      * 
+     * @param array $attributes
      * @return \Stripe\Charge|\Stripe\Error\Base
      */
     public function chargeCreate(array $attributes)
@@ -130,9 +140,10 @@ class StripeAdapter
     }
 
     /**
+     * @codeCoverageIgnore
+     * 
      * @param string $chargeId
      * @param null|array $params
-     * 
      * @return \Stripe\Charge|\Stripe\Error\Base
      */
     public function chargeCapture($chargeId, $params = null)
@@ -146,8 +157,9 @@ class StripeAdapter
     }
 
     /**
-     * @param array $params
+     * @codeCoverageIgnore
      * 
+     * @param array $params
      * @return \Stripe\Refund|\Stripe\Error\Base
      */
     public function refundCreate($params)

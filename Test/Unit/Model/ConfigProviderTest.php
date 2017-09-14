@@ -43,10 +43,13 @@ class ConfigProviderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * Run test getConfig method
+     * 
+     * @covers \Aune\Stripe\Model\Ui\ConfigProvider::getConfig
+     * 
+     * @dataProvider getConfigDataProvider
      *
      * @param array $config
      * @param array $expected
-     * @dataProvider getConfigDataProvider
      */
     public function testGetConfig($config, $expected)
     {

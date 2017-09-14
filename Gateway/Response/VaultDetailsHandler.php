@@ -41,7 +41,6 @@ class VaultDetailsHandler implements HandlerInterface
      * @param OrderPaymentExtensionInterfaceFactory $paymentExtensionFactory
      * @param Config $config
      * @param SubjectReader $subjectReader
-     * @param TimezoneInterface $timezone
      */
     public function __construct(
         PaymentTokenInterfaceFactory $paymentTokenFactory,
@@ -130,7 +129,7 @@ class VaultDetailsHandler implements HandlerInterface
      */
     private function convertDetailsToJSON($details)
     {
-        $json = \Zend_Json::encode($details);
+        $json = json_encode($details);
         return $json ? $json : '{}';
     }
 

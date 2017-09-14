@@ -20,6 +20,7 @@ class SubjectReaderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers \Aune\Stripe\Gateway\Helper\SubjectReader::readCustomerId
+     * 
      * @expectedException InvalidArgumentException
      * @expectedExceptionMessage The "customerId" field does not exists
      */
@@ -39,6 +40,7 @@ class SubjectReaderTest extends \PHPUnit_Framework_TestCase
 
     /**
      * @covers \Aune\Stripe\Gateway\Helper\SubjectReader::readPublicHash
+     * 
      * @expectedException InvalidArgumentException
      * @expectedExceptionMessage The "public_hash" field does not exists
      */

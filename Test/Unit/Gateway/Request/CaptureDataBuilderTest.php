@@ -20,9 +20,12 @@ class CaptureDataBuilderTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->builder = new CaptureDataBuilder($this->configMock, $this->subjectReaderMock);
+        $this->builder = new CaptureDataBuilder();
     }
 
+    /**
+     * @covers \Aune\Stripe\Gateway\Request\CaptureDataBuilder::build
+     */
     public function testBuild()
     {
         $expectedResult = [

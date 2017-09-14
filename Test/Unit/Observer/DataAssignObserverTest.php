@@ -13,15 +13,39 @@ class DataAssignObserverTest extends \PHPUnit_Framework_TestCase
 {
     const SOURCE = 'fwtYU5z5E6e6Dgav8BBUvtqB';
 
+    /**
+     * @var Observer|PHPUnit_Framework_MockObject_MockObject
+     */
+    private $observerContainer;
+    
+    /**
+     * @var Event|PHPUnit_Framework_MockObject_MockObject
+     */
+    private $event;
+    
+    /**
+     * @var InfoInterface|PHPUnit_Framework_MockObject_MockObject
+     */
+    private $paymentInfoModel;
+
+    protected function setUp()
+    {
+        $this->observerContainer = $this->getMockBuilder(Event\Observer::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        
+        $this->event = $this->getMockBuilder(Event::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+        
+        $this->paymentInfoModel = $this->getMock(InfoInterface::class);
+    }
+
+    /**
+     * @covers \Aune\Stripe\Observer\DataAssignObserver::execute
+     */
     public function testExecute()
     {
-        $observerContainer = $this->getMockBuilder(Event\Observer::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $event = $this->getMockBuilder(Event::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $paymentInfoModel = $this->getMock(InfoInterface::class);
         $dataObject = new DataObject(
             [
                 PaymentInterface::KEY_ADDITIONAL_DATA => [
@@ -29,22 +53,52 @@ class DataAssignObserverTest extends \PHPUnit_Framework_TestCase
                 ]
             ]
         );
-        $observerContainer->expects(static::atLeastOnce())
+        
+        $this->observerContainer->expects(static::atLeastOnce())
             ->method('getEvent')
-            ->willReturn($event);
-        $event->expects(static::exactly(2))
+            ->willReturn($this->event);
+        
+        $this->event->expects(static::exactly(2))
             ->method('getDataByKey')
             ->willReturnMap(
                 [
-                    [AbstractDataAssignObserver::MODEL_CODE, $paymentInfoModel],
+                    [AbstractDataAssignObserver::MODEL_CODE, $this->paymentInfoModel],
                     [AbstractDataAssignObserver::DATA_CODE, $dataObject]
                 ]
             );
-        $paymentInfoModel->expects(static::at(0))
+        
+        $this->paymentInfoModel->expects(static::at(0))
             ->method('setAdditionalInformation')
             ->with('source', self::SOURCE);
 
         $observer = new DataAssignObserver();
-        $observer->execute($observerContainer);
+        $observer->execute($this->observerContainer);
+    }
+    
+    /**
+     * @covers \Aune\Stripe\Observer\DataAssignObserver::execute
+     */
+    public function testExecuteNoAdditionalData()
+    {
+        $dataObject = new DataObject(
+            [
+                PaymentInterface::KEY_ADDITIONAL_DATA => false
+            ]
+        );
+        
+        $this->observerContainer->expects(static::atLeastOnce())
+            ->method('getEvent')
+            ->willReturn($this->event);
+        
+        $this->event->expects(static::once())
+            ->method('getDataByKey')
+            ->willReturnMap(
+                [
+                    [AbstractDataAssignObserver::DATA_CODE, $dataObject]
+                ]
+            );
+
+        $observer = new DataAssignObserver();
+        $observer->execute($this->observerContainer);
     }
 }

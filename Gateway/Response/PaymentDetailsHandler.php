@@ -74,7 +74,7 @@ class PaymentDetailsHandler implements HandlerInterface
                         $charge->$key->$item
                     );
                 }
-            } elseif (!isset($charge->$value)) {
+            } elseif (isset($charge->$value)) {
                 // Copy over element on base level
                 $payment->setAdditionalInformation($value, $charge->$value);
             }

@@ -9,6 +9,8 @@ class Info extends ConfigurableInfo
     /**
      * Returns label
      *
+     * @codeCoverageIgnore
+     * 
      * @param string $field
      * @return \Magento\Framework\Phrase
      */

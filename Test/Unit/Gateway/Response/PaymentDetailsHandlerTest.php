@@ -4,26 +4,24 @@ namespace Aune\Stripe\Test\Unit\Gateway\Response;
 
 use Magento\Payment\Gateway\Data\PaymentDataObject;
 use Magento\Sales\Model\Order\Payment;
-use Aune\Stripe\Gateway\Config\Config;
-use Aune\Stripe\Gateway\Helper\SubjectReader;
-use Aune\Stripe\Gateway\Response\CardDetailsHandler;
 
-class CardDetailsHandlerTest extends \PHPUnit_Framework_TestCase
+use Aune\Stripe\Gateway\Helper\SubjectReader;
+use Aune\Stripe\Gateway\Response\PaymentDetailsHandler;
+
+class PaymentDetailsHandlerTest extends \PHPUnit_Framework_TestCase
 {
+    const FAILURE_CODE = 'test-code';
+    const OUTCOME_REASON = 'Test Reason';
+    
     /**
-     * @var \Aune\Stripe\Gateway\Response\CardDetailsHandler
+     * @var \Aune\Stripe\Gateway\Response\PaymentDetailsHandler
      */
-    private $cardHandler;
+    private $handler;
 
     /**
      * @var \Magento\Sales\Model\Order\Payment|\PHPUnit_Framework_MockObject_MockObject
      */
     private $payment;
-
-    /**
-     * @var \Aune\Stripe\Gateway\Config\Config|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $config;
 
     /**
      * @var SubjectReader|\PHPUnit_Framework_MockObject_MockObject
@@ -32,19 +30,15 @@ class CardDetailsHandlerTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->config = $this->getMockBuilder(Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        
         $this->subjectReaderMock = $this->getMockBuilder(SubjectReader::class)
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->cardHandler = new CardDetailsHandler($this->config, $this->subjectReaderMock);
+        $this->handler = new PaymentDetailsHandler($this->subjectReaderMock);
     }
 
     /**
-     * @covers \Aune\Stripe\Gateway\Response\CardDetailsHandler::handle
+     * @covers \Aune\Stripe\Gateway\Response\PaymentDetailsHandler::handle
      */
     public function testHandle()
     {
@@ -63,18 +57,14 @@ class CardDetailsHandlerTest extends \PHPUnit_Framework_TestCase
             ->with($response)
             ->willReturn($charge);
 
-        $this->payment->expects(static::once())
-            ->method('setCcLast4');
-        $this->payment->expects(static::once())
-            ->method('setCcExpMonth');
-        $this->payment->expects(static::once())
-            ->method('setCcExpYear');
-        $this->payment->expects(static::once())
-            ->method('setCcType');
         $this->payment->expects(static::exactly(2))
-            ->method('setAdditionalInformation');
+            ->method('setAdditionalInformation')
+            ->withConsecutive(
+                [PaymentDetailsHandler::FAILURE_CODE, self::FAILURE_CODE],
+                [PaymentDetailsHandler::OUTCOME . '_' . PaymentDetailsHandler::OUTCOME_REASON, self::OUTCOME_REASON]
+            );
 
-        $this->cardHandler->handle($subject, $response);
+        $this->handler->handle($subject, $response);
     }
 
     /**
@@ -86,13 +76,6 @@ class CardDetailsHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $this->payment = $this->getMockBuilder(Payment::class)
             ->disableOriginalConstructor()
-            ->setMethods([
-                'setCcLast4',
-                'setCcExpMonth',
-                'setCcExpYear',
-                'setCcType',
-                'setAdditionalInformation',
-            ])
             ->getMock();
 
         $mock = $this->getMockBuilder(PaymentDataObject::class)
@@ -116,15 +99,12 @@ class CardDetailsHandlerTest extends \PHPUnit_Framework_TestCase
     {
         $attributes = [
             'object' => 'charge',
-            'source' => [
-                'card' => [
-                    'brand' => 'Visa',
-                    'exp_month' => 07,
-                    'exp_year' => 29,
-                    'last4' => 1234,
-                ]
-            ]
+            PaymentDetailsHandler::FAILURE_CODE => self::FAILURE_CODE,
+            PaymentDetailsHandler::OUTCOME => [
+                PaymentDetailsHandler::OUTCOME_REASON => self::OUTCOME_REASON,
+            ],
         ];
+        
         return \Stripe\Util\Util::convertToStripeObject($attributes, []);
     }
 }

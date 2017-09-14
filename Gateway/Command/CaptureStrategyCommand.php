@@ -35,11 +35,6 @@ class CaptureStrategyCommand implements CommandInterface
     const CAPTURE = 'charge_capture';
 
     /**
-     * Vault capture command
-     */
-    const VAULT_CAPTURE = 'vault_capture';
-
-    /**
      * @var CommandPoolInterface
      */
     private $commandPool;
@@ -130,7 +125,7 @@ class CaptureStrategyCommand implements CommandInterface
         }
 
         // Process capture for payment via Vault
-        return self::VAULT_CAPTURE;
+        return self::CAPTURE;
     }
 
     /**

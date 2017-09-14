@@ -79,7 +79,7 @@
                 <item name="capture" xsi:type="string">AuneStripeCaptureStrategyCommand</item>
                 <item name="charge_capture" xsi:type="string">AuneStripeCaptureCommand</item>
                 <item name="vault_authorize" xsi:type="string">AuneStripeVaultAuthorizeCommand</item>
-                <item name="vault_capture" xsi:type="string">AuneStripeVaultCaptureCommand</item>
+                <item name="vault_sale" xsi:type="string">AuneStripeVaultSaleCommand</item>
                 <item name="void" xsi:type="string">AuneStripeRefundCommand</item>
                 <item name="refund" xsi:type="string">AuneStripeRefundCommand</item>
                 <item name="cancel" xsi:type="string">AuneStripeRefundCommand</item>
@@ -183,17 +183,6 @@
             </argument>
         </arguments>
     </virtualType>
-    <!-- Vault Capture command -->
-    <virtualType name="AuneStripeVaultCaptureCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
-        <arguments>
-            <argument name="transferFactory" xsi:type="object">Aune\Stripe\Gateway\Http\TransferFactory</argument>
-            <argument name="client" xsi:type="object">Aune\Stripe\Gateway\Http\Client\ChargeCapture</argument>
-            <argument name="requestBuilder" xsi:type="object">Aune\Stripe\Gateway\Request\ChargeCaptureDataBuilder</argument>
-            <argument name="handler" xsi:type="object">Aune\Stripe\Gateway\Response\ChargeIdHandler</argument>
-            <argument name="validator" xsi:type="object">Aune\Stripe\Gateway\Validator\ResponseValidator</argument>
-        </arguments>
-    </virtualType>
-    <!-- END commands  -->
 
     <!-- Value handlers infrastructure -->
     <type name="Aune\Stripe\Gateway\Response\VaultDetailsHandler">

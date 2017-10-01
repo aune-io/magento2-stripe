@@ -8,7 +8,7 @@ use Magento\Sales\Model\Order\Payment;
 use Aune\Stripe\Gateway\Helper\SubjectReader;
 use Aune\Stripe\Gateway\Response\PaymentDetailsHandler;
 
-class PaymentDetailsHandlerTest extends \PHPUnit_Framework_TestCase
+class PaymentDetailsHandlerTest extends \PHPUnit\Framework\TestCase
 {
     const FAILURE_CODE = 'test-code';
     const OUTCOME_REASON = 'Test Reason';

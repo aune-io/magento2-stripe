@@ -8,7 +8,7 @@ use Magento\Payment\Model\Method\Logger;
 use Aune\Stripe\Gateway\Http\Client\Charge;
 use Aune\Stripe\Model\Adapter\StripeAdapter;
 
-class ChargeTest extends \PHPUnit_Framework_TestCase
+class ChargeTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var Charge
@@ -107,7 +107,7 @@ class ChargeTest extends \PHPUnit_Framework_TestCase
      */
     private function getTransferObjectMock()
     {
-        $transferObjectMock = $this->getMock(TransferInterface::class);
+        $transferObjectMock = $this->getMockForAbstractClass(TransferInterface::class);
         $transferObjectMock->expects($this->once())
             ->method('getBody')
             ->willReturn($this->getTransferData());

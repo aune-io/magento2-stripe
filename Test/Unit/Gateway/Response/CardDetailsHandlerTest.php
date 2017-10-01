@@ -8,7 +8,7 @@ use Aune\Stripe\Gateway\Config\Config;
 use Aune\Stripe\Gateway\Helper\SubjectReader;
 use Aune\Stripe\Gateway\Response\CardDetailsHandler;
 
-class CardDetailsHandlerTest extends \PHPUnit_Framework_TestCase
+class CardDetailsHandlerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var \Aune\Stripe\Gateway\Response\CardDetailsHandler

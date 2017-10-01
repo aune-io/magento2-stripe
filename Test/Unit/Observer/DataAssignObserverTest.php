@@ -9,7 +9,7 @@ use Magento\Payment\Observer\AbstractDataAssignObserver;
 use Magento\Quote\Api\Data\PaymentInterface;
 use Aune\Stripe\Observer\DataAssignObserver;
 
-class DataAssignObserverTest extends \PHPUnit_Framework_TestCase
+class DataAssignObserverTest extends \PHPUnit\Framework\TestCase
 {
     const SOURCE = 'fwtYU5z5E6e6Dgav8BBUvtqB';
 
@@ -38,7 +38,7 @@ class DataAssignObserverTest extends \PHPUnit_Framework_TestCase
             ->disableOriginalConstructor()
             ->getMock();
         
-        $this->paymentInfoModel = $this->getMock(InfoInterface::class);
+        $this->paymentInfoModel = $this->getMockForAbstractClass(InfoInterface::class);
     }
 
     /**

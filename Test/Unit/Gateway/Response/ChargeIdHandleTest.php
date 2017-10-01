@@ -7,11 +7,11 @@ use Magento\Sales\Model\Order\Payment;
 use Aune\Stripe\Gateway\Helper\SubjectReader;
 use Aune\Stripe\Gateway\Response\ChargeIdHandler;
 
-class ChargeIdHandlerTest extends \PHPUnit_Framework_TestCase
+class ChargeIdHandlerTest extends \PHPUnit\Framework\TestCase
 {
     public function testHandle()
     {
-        $paymentDO = $this->getMock(PaymentDataObjectInterface::class);
+        $paymentDO = $this->getMockForAbstractClass(PaymentDataObjectInterface::class);
         $paymentInfo = $this->getMockBuilder(Payment::class)
             ->disableOriginalConstructor()
             ->getMock();

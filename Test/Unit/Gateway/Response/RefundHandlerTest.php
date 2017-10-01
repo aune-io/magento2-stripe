@@ -10,7 +10,7 @@ use Magento\Sales\Model\Order\Creditmemo;
 use Aune\Stripe\Gateway\Helper\SubjectReader;
 use Aune\Stripe\Gateway\Response\RefundHandler;
 
-class RefundHandlerTest extends \PHPUnit_Framework_TestCase
+class RefundHandlerTest extends \PHPUnit\Framework\TestCase
 {
     const REFUND_ID = 'ref_123';
     

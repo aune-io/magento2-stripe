@@ -12,7 +12,7 @@ use Aune\Stripe\Model\Ui\TokenUiComponentProvider;
 
 use PHPUnit_Framework_MockObject_MockObject as MockObject;
 
-class TokenUiComponentProviderTest extends \PHPUnit_Framework_TestCase
+class TokenUiComponentProviderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var PaymentTokenInterface|MockObject

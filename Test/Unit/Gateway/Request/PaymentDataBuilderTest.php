@@ -13,7 +13,7 @@ use Aune\Stripe\Gateway\Helper\SubjectReader;
 use Aune\Stripe\Gateway\Request\PaymentDataBuilder;
 use Aune\Stripe\Observer\DataAssignObserver;
 
-class PaymentDataBuilderTest extends \PHPUnit_Framework_TestCase
+class PaymentDataBuilderTest extends \PHPUnit\Framework\TestCase
 {
     const CURRENCY_CODE_DECIMAL = 'USD';
     const CURRENCY_CODE_ZERO_DECIMAL = 'JPY';
@@ -50,7 +50,7 @@ class PaymentDataBuilderTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->paymentDO = $this->getMock(PaymentDataObjectInterface::class);
+        $this->paymentDO = $this->getMockForAbstractClass(PaymentDataObjectInterface::class);
         $this->configMock = $this->getMockBuilder(Config::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -60,7 +60,7 @@ class PaymentDataBuilderTest extends \PHPUnit_Framework_TestCase
         $this->subjectReaderMock = $this->getMockBuilder(SubjectReader::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->orderMock = $this->getMock(OrderAdapterInterface::class);
+        $this->orderMock = $this->getMockForAbstractClass(OrderAdapterInterface::class);
 
         $this->builder = new PaymentDataBuilder(
             $this->configMock,

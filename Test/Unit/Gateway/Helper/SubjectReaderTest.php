@@ -6,7 +6,7 @@ use InvalidArgumentException;
 use Stripe\Charge;
 use Aune\Stripe\Gateway\Helper\SubjectReader;
 
-class SubjectReaderTest extends \PHPUnit_Framework_TestCase
+class SubjectReaderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var SubjectReader

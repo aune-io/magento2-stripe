@@ -11,7 +11,7 @@ use Aune\Stripe\Gateway\Helper\SubjectReader;
 use Aune\Stripe\Gateway\Request\CaptureDataBuilder;
 use Aune\Stripe\Observer\DataAssignObserver;
 
-class CaptureDataBuilderTest extends \PHPUnit_Framework_TestCase
+class CaptureDataBuilderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var CaptureDataBuilder

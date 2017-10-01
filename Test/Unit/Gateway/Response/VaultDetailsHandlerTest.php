@@ -13,7 +13,7 @@ use Aune\Stripe\Gateway\Config\Config;
 use Aune\Stripe\Gateway\Helper\SubjectReader;
 use Aune\Stripe\Gateway\Response\VaultDetailsHandler;
 
-class VaultDetailsHandlerTest extends \PHPUnit_Framework_TestCase
+class VaultDetailsHandlerTest extends \PHPUnit\Framework\TestCase
 {
     const CUSTOMER_ID = 'cus_123';
     

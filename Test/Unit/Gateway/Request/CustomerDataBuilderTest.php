@@ -11,7 +11,7 @@ use Aune\Stripe\Gateway\Config\Config;
 use Aune\Stripe\Gateway\Helper\SubjectReader;
 use Aune\Stripe\Gateway\Request\CustomerDataBuilder;
 
-class CustomerDataBuilderTest extends \PHPUnit_Framework_TestCase
+class CustomerDataBuilderTest extends \PHPUnit\Framework\TestCase
 {
     const CUSTOMER = 'customerId';
 
@@ -52,7 +52,7 @@ class CustomerDataBuilderTest extends \PHPUnit_Framework_TestCase
     
     protected function setUp()
     {
-        $this->paymentDO = $this->getMock(PaymentDataObjectInterface::class);
+        $this->paymentDO = $this->getMockForAbstractClass(PaymentDataObjectInterface::class);
         $this->configMock = $this->getMockBuilder(Config::class)
             ->disableOriginalConstructor()
             ->getMock();

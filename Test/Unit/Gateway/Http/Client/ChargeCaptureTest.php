@@ -9,7 +9,7 @@ use Aune\Stripe\Gateway\Http\Client\ChargeCapture;
 use Aune\Stripe\Gateway\Request\ChargeCaptureDataBuilder;
 use Aune\Stripe\Model\Adapter\StripeAdapter;
 
-class ChargeCaptureTest extends \PHPUnit_Framework_TestCase
+class ChargeCaptureTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ChargeCapture
@@ -113,7 +113,7 @@ class ChargeCaptureTest extends \PHPUnit_Framework_TestCase
      */
     private function getTransferObjectMock()
     {
-        $transferObjectMock = $this->getMock(TransferInterface::class);
+        $transferObjectMock = $this->getMockForAbstractClass(TransferInterface::class);
         $transferObjectMock->expects($this->once())
             ->method('getBody')
             ->willReturn($this->getTransferData());

@@ -14,7 +14,7 @@ use Aune\Stripe\Gateway\Request\SourceDataBuilder;
 use Aune\Stripe\Model\Adapter\StripeAdapter;
 use Aune\Stripe\Observer\DataAssignObserver;
 
-class SourceDataBuilderTest extends \PHPUnit_Framework_TestCase
+class SourceDataBuilderTest extends \PHPUnit\Framework\TestCase
 {
     const SOURCE = 'sourceId';
     const CUSTOMER = 'customerId';
@@ -61,7 +61,7 @@ class SourceDataBuilderTest extends \PHPUnit_Framework_TestCase
 
     protected function setUp()
     {
-        $this->paymentDO = $this->getMock(PaymentDataObjectInterface::class);
+        $this->paymentDO = $this->getMockForAbstractClass(PaymentDataObjectInterface::class);
         $this->configMock = $this->getMockBuilder(Config::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -74,8 +74,8 @@ class SourceDataBuilderTest extends \PHPUnit_Framework_TestCase
         $this->subjectReaderMock = $this->getMockBuilder(SubjectReader::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $this->orderMock = $this->getMock(OrderAdapterInterface::class);
-        $this->addressMock = $this->getMock(AddressAdapterInterface::class);
+        $this->orderMock = $this->getMockForAbstractClass(OrderAdapterInterface::class);
+        $this->addressMock = $this->getMockForAbstractClass(AddressAdapterInterface::class);
 
         $this->builder = new SourceDataBuilder(
             $this->configMock,

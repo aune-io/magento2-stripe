@@ -6,7 +6,7 @@ use Aune\Stripe\Gateway\Config\Config;
 use Aune\Stripe\Model\Adapter\StripeAdapter;
 use Aune\Stripe\Model\Ui\ConfigProvider;
 
-class ConfigProviderTest extends \PHPUnit_Framework_TestCase
+class ConfigProviderTest extends \PHPUnit\Framework\TestCase
 {
     const SDK_URL = 'https://js.stripe.com/v3/';
 

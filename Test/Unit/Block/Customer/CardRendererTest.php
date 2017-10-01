@@ -9,7 +9,7 @@ use Magento\Payment\Model\CcConfigProvider;
 use Aune\Stripe\Block\Customer\CardRenderer;
 use Aune\Stripe\Model\Ui\ConfigProvider;
 
-class CardRendererTest extends \PHPUnit_Framework_TestCase
+class CardRendererTest extends \PHPUnit\Framework\TestCase
 {
     const TOKEN_MASKED_CC = '1111';
     const TOKEN_EXPIRATION_DATE = '10/26';
@@ -43,9 +43,7 @@ class CardRendererTest extends \PHPUnit_Framework_TestCase
     {
         $this->objectManager = new ObjectManager($this);
 
-        $this->paymentToken = $this->getMockBuilder(PaymentTokenInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->paymentToken = $this->getMockForAbstractClass(PaymentTokenInterface::class);
 
         $this->iconsProvider = $this->getMockBuilder(CcConfigProvider::class)
             ->disableOriginalConstructor()

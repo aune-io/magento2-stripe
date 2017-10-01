@@ -8,7 +8,7 @@ use Magento\Payment\Gateway\Validator\ResultInterfaceFactory;
 use Aune\Stripe\Gateway\Validator\ResponseValidator;
 use Aune\Stripe\Gateway\Helper\SubjectReader;
 
-class ResponseValidatorTest extends \PHPUnit_Framework_TestCase
+class ResponseValidatorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * @var ResponseValidator
@@ -92,7 +92,7 @@ class ResponseValidatorTest extends \PHPUnit_Framework_TestCase
      */
     public function testValidate(array $validationSubject, $isValid, $messages)
     {
-        $result = $this->getMock(ResultInterface::class);
+        $result = $this->getMockForAbstractClass(ResultInterface::class);
 
         $this->subjectReader->expects(self::once())
             ->method('readResponseObject')

@@ -24,7 +24,7 @@
                 <can_deny_payment>1</can_deny_payment>
                 <order_status>processing</order_status>
                 <sdk_url><![CDATA[https://js.stripe.com/v3/]]></sdk_url>
-                <cctypes_stripe_mapper><![CDATA[{"american-express":"AE","discover":"DI","jcb":"JCB","master-card":"MC","visa":"VI","diners-club":"DN"}]]></cctypes_stripe_mapper>
+                <cctypes_stripe_mapper><![CDATA[{"american-express":"AE","discover":"DI","jcb":"JCB","mastercard":"MC","visa":"VI","diners-club":"DN"}]]></cctypes_stripe_mapper>
                 <paymentInfoKeys>source,outcome_seller_message,failure_code,failure_message,outcome_type,outcome_network_status,outcome_risk_level,cc_type,cc_number</paymentInfoKeys>
                 <privateInfoKeys>source,outcome_seller_message,failure_code,failure_message,outcome_type,outcome_network_status,outcome_risk_level</privateInfoKeys>
             </aune_stripe>

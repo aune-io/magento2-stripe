@@ -62,7 +62,7 @@ class TokenUiComponentProviderTest extends \PHPUnit\Framework\TestCase
         ];
         $hash = rand();
         
-        $tokenCreateParameters = [
+        $params = [
             'config' => [
                 'code' => ConfigProvider::VAULT_CODE,
                 TokenUiComponentProviderInterface::COMPONENT_DETAILS => $tokenDetails,
@@ -77,7 +77,7 @@ class TokenUiComponentProviderTest extends \PHPUnit\Framework\TestCase
 
         $this->componentFactory->expects(static::once())
             ->method('create')
-            ->with($tokenCreateParameters)
+            ->with($params)
             ->willReturn($this->tokenComponent);
         
         $this->paymentToken->expects(static::once())

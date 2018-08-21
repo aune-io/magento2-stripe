@@ -12,8 +12,8 @@ install:
     - composer create-project --repository=https://repo.magento.com magento/marketplace-eqp marketplace-eqp
 
 script:
-    - php marketplace-eqp/vendor/bin/phpcs Block/ Gateway/ Model/ Observer/ Test/ view/  --standard=MEQP2 --severity=10
-    - php vendor/bin/phpmd Block/,Gateway/,Model/,Observer/,Test/,view/ text cleancode,codesize,controversial,design,naming,unusedcode --ignore-violations-on-exit
+    - php marketplace-eqp/vendor/bin/phpcs Block/ Gateway/ Model/ Observer/ Setup/ Test/ view/ --standard=MEQP2 --severity=10
+    - php vendor/bin/phpmd Block/,Gateway/,Model/,Observer/,Setup/,Test/,view/ text cleancode,codesize,controversial,design,naming,unusedcode --ignore-violations-on-exit
     - php vendor/phpunit/phpunit/phpunit --coverage-clover Test/Unit/logs/clover.xml Test
 
 after_script:

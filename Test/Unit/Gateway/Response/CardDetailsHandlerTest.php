@@ -4,10 +4,14 @@ namespace Aune\Stripe\Test\Unit\Gateway\Response;
 
 use Magento\Payment\Gateway\Data\PaymentDataObject;
 use Magento\Sales\Model\Order\Payment;
+
 use Aune\Stripe\Gateway\Config\Config;
 use Aune\Stripe\Gateway\Helper\SubjectReader;
 use Aune\Stripe\Gateway\Response\CardDetailsHandler;
 
+/**
+ * @SuppressWarnings(PHPMD.StaticAccess)
+ */
 class CardDetailsHandlerTest extends \PHPUnit\Framework\TestCase
 {
     /**
@@ -125,6 +129,7 @@ class CardDetailsHandlerTest extends \PHPUnit\Framework\TestCase
                 ]
             ]
         ];
+        
         return \Stripe\Util\Util::convertToStripeObject($attributes, []);
     }
 }

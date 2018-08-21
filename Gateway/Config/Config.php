@@ -82,7 +82,7 @@ class Config extends \Magento\Payment\Gateway\Config\Config
      * 
      * @return bool
      */
-    public function getStoreCustomer()
+    public function isStoreCustomerEnabled()
     {
         return (bool) $this->getValue(self::KEY_STORE_CUSTOMER);
     }

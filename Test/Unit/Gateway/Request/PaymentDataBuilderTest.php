@@ -128,10 +128,6 @@ class PaymentDataBuilderTest extends \PHPUnit\Framework\TestCase
             'amount' => 10.00,
         ];
 
-        $this->paymentDO->expects(static::once())
-            ->method('getPayment')
-            ->willReturn($this->paymentMock);
-
         $this->subjectReaderMock->expects(self::once())
             ->method('readPayment')
             ->with($buildSubject)
@@ -168,10 +164,6 @@ class PaymentDataBuilderTest extends \PHPUnit\Framework\TestCase
             'payment' => $this->paymentDO,
             'amount' => 1000.00,
         ];
-
-        $this->paymentDO->expects(static::once())
-            ->method('getPayment')
-            ->willReturn($this->paymentMock);
 
         $this->subjectReaderMock->expects(self::once())
             ->method('readPayment')

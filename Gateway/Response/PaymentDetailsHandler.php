@@ -22,7 +22,7 @@ class PaymentDetailsHandler implements HandlerInterface
     /**
      * @var array
      */
-    protected $additionalInformationMapping = [
+    protected $additionalInfoMap = [
         self::FAILURE_CODE,
         self::FAILURE_MESSAGE,
         self::OUTCOME => [
@@ -60,7 +60,7 @@ class PaymentDetailsHandler implements HandlerInterface
         /** @var OrderPaymentInterface $payment */
         $payment = $paymentDO->getPayment();
 
-        foreach ($this->additionalInformationMapping as $key => $value) {
+        foreach ($this->additionalInfoMap as $key => $value) {
             if (is_array($value)) {
                 foreach ($value as $item) {
                     // Skip empty values

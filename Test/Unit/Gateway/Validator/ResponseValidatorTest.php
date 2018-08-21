@@ -8,6 +8,9 @@ use Magento\Payment\Gateway\Validator\ResultInterfaceFactory;
 use Aune\Stripe\Gateway\Validator\ResponseValidator;
 use Aune\Stripe\Gateway\Helper\SubjectReader;
 
+/**
+ * @SuppressWarnings(PHPMD.StaticAccess)
+ */
 class ResponseValidatorTest extends \PHPUnit\Framework\TestCase
 {
     /**

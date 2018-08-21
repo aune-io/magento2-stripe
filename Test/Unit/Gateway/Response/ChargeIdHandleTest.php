@@ -4,9 +4,13 @@ namespace Aune\Stripe\Test\Unit\Gateway\Response;
 
 use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 use Magento\Sales\Model\Order\Payment;
+
 use Aune\Stripe\Gateway\Helper\SubjectReader;
 use Aune\Stripe\Gateway\Response\ChargeIdHandler;
 
+/**
+ * @SuppressWarnings(PHPMD.StaticAccess)
+ */
 class ChargeIdHandlerTest extends \PHPUnit\Framework\TestCase
 {
     public function testHandle()
@@ -15,6 +19,7 @@ class ChargeIdHandlerTest extends \PHPUnit\Framework\TestCase
         $paymentInfo = $this->getMockBuilder(Payment::class)
             ->disableOriginalConstructor()
             ->getMock();
+        
         $handlingSubject = [
             'payment' => $paymentDO
         ];
@@ -23,6 +28,7 @@ class ChargeIdHandlerTest extends \PHPUnit\Framework\TestCase
             'object' => 'charge',
             'id' => 1,
         ], []);
+        
         $response = [
             'object' => $charge,
         ];

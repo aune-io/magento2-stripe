@@ -5,9 +5,13 @@ namespace Aune\Stripe\Test\Unit\Gateway\Validator;
 use Magento\Framework\Phrase;
 use Magento\Payment\Gateway\Validator\ResultInterface;
 use Magento\Payment\Gateway\Validator\ResultInterfaceFactory;
+
 use Aune\Stripe\Gateway\Validator\GeneralResponseValidator;
 use Aune\Stripe\Gateway\Helper\SubjectReader;
 
+/**
+ * @SuppressWarnings(PHPMD.StaticAccess)
+ */
 class GeneralResponseValidatorTest extends \PHPUnit\Framework\TestCase
 {
     /**

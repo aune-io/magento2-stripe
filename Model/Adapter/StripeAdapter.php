@@ -10,12 +10,16 @@ use Stripe\Stripe;
 use Magento\Framework\Module\ModuleListInterface;
 use Aune\Stripe\Gateway\Config\Config;
 
+/**
+ * @codeCoverageIgnore
+ * @SuppressWarnings(PHPMD.StaticAccess)
+ */
 class StripeAdapter
 {
     const MODULE_NAME = 'Aune_Stripe';
     const APPLICATION_NAME = 'AuneStripeM2';
     const APPLICATION_URL = 'https://gitbub.com/aune/magento2-stripe';
-    const API_VERSION = '2017-08-15';
+    const API_VERSION = '2018-07-27';
     
     /**
      * @var Config
@@ -28,8 +32,6 @@ class StripeAdapter
     private $moduleList;
 
     /**
-     * @codeCoverageIgnore
-     *
      * @param Config $config
      * @param ModuleListInterface $moduleList
      */
@@ -45,9 +47,7 @@ class StripeAdapter
 
     /**
      * Initializes credentials.
-     *
-     * @codeCoverageIgnore
-     *
+     * 
      * @return void
      */
     protected function initCredentials()
@@ -68,8 +68,6 @@ class StripeAdapter
     }
     
     /**
-     * @codeCoverageIgnore
-     * 
      * @param string|null $value
      * @return mixed
      */
@@ -79,8 +77,6 @@ class StripeAdapter
     }
     
     /**
-     * @codeCoverageIgnore
-     * 
      * @param string $applicationName
      * @param string $applicationVersion
      * @param string $applicationUrl
@@ -92,8 +88,6 @@ class StripeAdapter
     }
     
     /**
-     * @codeCoverageIgnore
-     * 
      * @param string|null $value
      * @return mixed
      */
@@ -103,8 +97,6 @@ class StripeAdapter
     }
 
     /**
-     * @codeCoverageIgnore
-     * 
      * @param array $attributes
      * @return \Stripe\Customer|\Stripe\Error\Base
      */
@@ -112,10 +104,17 @@ class StripeAdapter
     {
         return Customer::create($attributes);
     }
+    
+    /**
+     * @param string $customerId
+     * @return \Stripe\Customer|\Stripe\Error\Base
+     */
+    public function customerRetrieve(string $customerId)
+    {
+        return Customer::retrieve($customerId);
+    }
 
     /**
-     * @codeCoverageIgnore
-     * 
      * @param string $chargeId
      * @return \Stripe\Charge|null
      */
@@ -129,8 +128,6 @@ class StripeAdapter
     }
 
     /**
-     * @codeCoverageIgnore
-     * 
      * @param array $attributes
      * @return \Stripe\Charge|\Stripe\Error\Base
      */
@@ -140,8 +137,6 @@ class StripeAdapter
     }
 
     /**
-     * @codeCoverageIgnore
-     * 
      * @param string $chargeId
      * @param null|array $params
      * @return \Stripe\Charge|\Stripe\Error\Base
@@ -157,8 +152,6 @@ class StripeAdapter
     }
 
     /**
-     * @codeCoverageIgnore
-     * 
      * @param array $params
      * @return \Stripe\Refund|\Stripe\Error\Base
      */

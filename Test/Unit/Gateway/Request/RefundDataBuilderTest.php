@@ -24,11 +24,6 @@ class RefundDataBuilderTest extends \PHPUnit\Framework\TestCase
     private $builder;
 
     /**
-     * @var Config|\PHPUnit_Framework_MockObject_MockObject
-     */
-    private $configMock;
-
-    /**
      * @var Payment|\PHPUnit_Framework_MockObject_MockObject
      */
     private $paymentMock;

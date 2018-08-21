@@ -45,7 +45,7 @@ class CanVoidHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @covers \Aune\Stripe\Model\Config\CanVoidHandler::handle
+     * @covers \Aune\Stripe\Gateway\Config\CanVoidHandler::handle
      */
     public function testHandleWithoutPayment()
     {
@@ -69,7 +69,7 @@ class CanVoidHandlerTest extends \PHPUnit\Framework\TestCase
     }
     
     /**
-     * @covers \Aune\Stripe\Model\Config\CanVoidHandler::handle
+     * @covers \Aune\Stripe\Gateway\Config\CanVoidHandler::handle
      */
     public function testHandleWithAmountPaid()
     {
@@ -97,7 +97,7 @@ class CanVoidHandlerTest extends \PHPUnit\Framework\TestCase
     }
     
     /**
-     * @covers \Aune\Stripe\Model\Config\CanVoidHandler::handle
+     * @covers \Aune\Stripe\Gateway\Config\CanVoidHandler::handle
      */
     public function testHandle()
     {

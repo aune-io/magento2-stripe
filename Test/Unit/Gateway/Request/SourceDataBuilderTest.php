@@ -197,11 +197,16 @@ class SourceDataBuilderTest extends \PHPUnit\Framework\TestCase
             ->willReturn($this->addressMock);
 
         $customerRequest = $this->prepareCustomerRequest();
+        $stripeCustomer = $this->getCustomerObject();
 
         $this->adapter->expects(self::once())
             ->method('customerCreate')
             ->with($customerRequest)
-            ->willReturn($this->getCustomerObject());
+            ->willReturn($stripeCustomer);
+
+        $this->adapter->expects(self::once())
+            ->method('customerAttachSource')
+            ->with($stripeCustomer, self::SOURCE_ID);
 
         static::assertEquals(
             $expectedResult,
@@ -262,11 +267,16 @@ class SourceDataBuilderTest extends \PHPUnit\Framework\TestCase
             ->willReturn($this->addressMock);
 
         $customerRequest = $this->prepareCustomerRequest();
+        $stripeCustomer = $this->getCustomerObject();
 
         $this->adapter->expects(self::once())
             ->method('customerCreate')
             ->with($customerRequest)
-            ->willReturn($this->getCustomerObject());
+            ->willReturn($stripeCustomer);
+
+        $this->adapter->expects(self::once())
+            ->method('customerAttachSource')
+            ->with($stripeCustomer, self::SOURCE_ID);
 
         static::assertEquals(
             $expectedResult,
@@ -369,11 +379,17 @@ class SourceDataBuilderTest extends \PHPUnit\Framework\TestCase
         $this->tokenProviderMock->expects(self::once())
             ->method('getCustomerStripeId')
             ->willReturn(self::CUSTOMER_ID);
-            
+        
+        $stripeCustomer = $this->getCustomerObject();
+        
         $this->adapter->expects(self::once())
             ->method('customerRetrieve')
             ->with(self::CUSTOMER_ID)
-            ->willReturn($this->getCustomerObject());
+            ->willReturn($stripeCustomer);
+        
+        $this->adapter->expects(self::once())
+            ->method('customerAttachSource')
+            ->with($stripeCustomer, self::SOURCE_ID);
 
         static::assertEquals(
             $expectedResult,
@@ -418,20 +434,9 @@ class SourceDataBuilderTest extends \PHPUnit\Framework\TestCase
      */
     private function getCustomerObject()
     {
-        $customer = new \stdClass;
-        $customer->id = self::CUSTOMER_ID;
-    
-        $sources = $this->getMockBuilder(\stdClass::class)
-            ->setMethods(['create'])
-            ->getMock();
-        
-        $sources->expects(self::once())
-            ->method('create')
-            ->with(['source' => self::SOURCE_ID])
-            ->willReturn(true);
-        
-        $customer->sources = $sources;
-
-        return $customer;
+        return \Stripe\Util\Util::convertToStripeObject([
+            'object' => 'customer',
+            'id' => self::CUSTOMER_ID,
+        ], []);
     }
 }

@@ -113,6 +113,20 @@ class StripeAdapter
     {
         return Customer::retrieve($customerId);
     }
+    
+    /**
+     * @param \Stripe\Customer $customer
+     * @param string $sourceId
+     * @return \Stripe\Source|\Stripe\Error\Base
+     */
+    public function customerAttachSource(
+        \Stripe\Customer $customer,
+        string $sourceId
+    ) {
+        return $customer->sources->create([
+            'source' => $sourceId,
+        ]);
+    }
 
     /**
      * @param string $chargeId

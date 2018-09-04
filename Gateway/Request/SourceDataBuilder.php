@@ -71,9 +71,7 @@ class SourceDataBuilder implements BuilderInterface
             // Attach new source to customer
             $stripeCustomer = $this->getStripeCustomer($orderAdapter);
             
-            $stripeCustomer->sources->create([
-                'source' => $sourceId,
-            ]);
+            $this->stripeAdapter->customerAttachSource($stripeCustomer, $sourceId);
             
             return [
                 self::SOURCE => $sourceId,

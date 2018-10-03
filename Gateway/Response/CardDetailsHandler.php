@@ -5,9 +5,13 @@ namespace Aune\Stripe\Gateway\Response;
 use Magento\Payment\Gateway\Helper\ContextHelper;
 use Magento\Payment\Gateway\Response\HandlerInterface;
 use Magento\Sales\Api\Data\OrderPaymentInterface;
+
 use Aune\Stripe\Gateway\Config\Config;
 use Aune\Stripe\Gateway\Helper\SubjectReader;
 
+/**
+ * @SuppressWarnings(PHPMD.StaticAccess)
+ */
 class CardDetailsHandler implements HandlerInterface
 {
     const CARD_BRAND = 'brand';

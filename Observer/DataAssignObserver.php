@@ -13,7 +13,7 @@ class DataAssignObserver extends AbstractDataAssignObserver
     /**
      * @var array
      */
-    protected $additionalInformationList = [
+    protected $additionalInfo = [
         self::SOURCE,
     ];
 
@@ -31,11 +31,11 @@ class DataAssignObserver extends AbstractDataAssignObserver
 
         $paymentInfo = $this->readPaymentModelArgument($observer);
 
-        foreach ($this->additionalInformationList as $additionalInformationKey) {
-            if (isset($additionalData[$additionalInformationKey])) {
+        foreach ($this->additionalInfo as $additionalInfoKey) {
+            if (isset($additionalData[$additionalInfoKey])) {
                 $paymentInfo->setAdditionalInformation(
-                    $additionalInformationKey,
-                    $additionalData[$additionalInformationKey]
+                    $additionalInfoKey,
+                    $additionalData[$additionalInfoKey]
                 );
             }
         }

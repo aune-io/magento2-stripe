@@ -9,11 +9,13 @@ use Magento\Vault\Api\Data\PaymentTokenInterface;
 
 use Aune\Stripe\Gateway\Config\Config;
 use Aune\Stripe\Gateway\Helper\SubjectReader;
+use Aune\Stripe\Gateway\Helper\TokenProvider;
 use Aune\Stripe\Gateway\Request\CustomerDataBuilder;
 
 class CustomerDataBuilderTest extends \PHPUnit\Framework\TestCase
 {
-    const CUSTOMER = 'customerId';
+    const CUSTOMER_ID = 'cus_123';
+    const SOURCE_ID = 'src_123';
 
     /**
      * @var CustomerDataBuilder
@@ -41,6 +43,11 @@ class CustomerDataBuilderTest extends \PHPUnit\Framework\TestCase
     private $subjectReaderMock;
     
     /**
+     * @var TokenProvider|\PHPUnit_Framework_MockObject_MockObject
+     */
+    private $tokenProviderMock;
+    
+    /**
      * @var OrderPaymentExtensionInterface|\PHPUnit_Framework_MockObject_MockObject
      */
     private $paymentExtensionMock;
@@ -62,6 +69,9 @@ class CustomerDataBuilderTest extends \PHPUnit\Framework\TestCase
         $this->subjectReaderMock = $this->getMockBuilder(SubjectReader::class)
             ->disableOriginalConstructor()
             ->getMock();
+        $this->tokenProviderMock = $this->getMockBuilder(TokenProvider::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         $this->paymentExtensionMock = $this->getMockBuilder(OrderPaymentExtensionInterface::class)
             ->disableOriginalConstructor()
             ->setMethods(['getVaultPaymentToken'])
@@ -72,40 +82,108 @@ class CustomerDataBuilderTest extends \PHPUnit\Framework\TestCase
             
         $this->builder = new CustomerDataBuilder(
             $this->configMock,
-            $this->subjectReaderMock
+            $this->subjectReaderMock,
+            $this->tokenProviderMock
         );
     }
 
-    public function testBuild()
+    /**
+     * Tests customer data builder with source token
+     * 
+     * @covers \Aune\Stripe\Gateway\Request\CustomerDataBuilder::build
+     */
+    public function testBuildWithSourceToken()
     {
         $expectedResult = [
-            CustomerDataBuilder::CUSTOMER  => self::CUSTOMER,
+            CustomerDataBuilder::CUSTOMER => self::CUSTOMER_ID,
         ];
 
         $buildSubject = [
             'payment' => $this->paymentDO,
         ];
         
-        $this->paymentTokenMock->expects(static::once())
-            ->method('getGatewayToken')
-            ->willReturn(self::CUSTOMER);
+        $this->subjectReaderMock->expects(self::once())
+            ->method('readPayment')
+            ->with($buildSubject)
+            ->willReturn($this->paymentDO);
+
+        $this->paymentDO->expects(static::once())
+            ->method('getPayment')
+            ->willReturn($this->paymentMock);
+        
+        $this->paymentMock->expects(static::once())
+            ->method('getExtensionAttributes')
+            ->willReturn($this->paymentExtensionMock);
         
         $this->paymentExtensionMock->expects(static::once())
             ->method('getVaultPaymentToken')
             ->willReturn($this->paymentTokenMock);
         
-        $this->paymentMock->expects(static::once())
-            ->method('getExtensionAttributes')
-            ->willReturn($this->paymentExtensionMock);
+        $this->paymentTokenMock->expects(static::once())
+            ->method('getGatewayToken')
+            ->willReturn(self::CUSTOMER_ID);
+            
+        $this->paymentTokenMock->expects(self::once())
+            ->method('getTokenDetails')
+            ->willReturn('{"type":"VI","maskedCC":1234,"expirationDate":"07\/2029"}');
 
-        $this->paymentDO->expects(static::once())
-            ->method('getPayment')
-            ->willReturn($this->paymentMock);
+        static::assertEquals(
+            $expectedResult,
+            $this->builder->build($buildSubject)
+        );
+    }
+    
+    /**
+     * Tests customer data builder with customer token
+     * 
+     * @covers \Aune\Stripe\Gateway\Request\CustomerDataBuilder::build
+     */
+    public function testBuildWithCustomerToken()
+    {
+        $expectedResult = [
+            CustomerDataBuilder::CUSTOMER => self::CUSTOMER_ID,
+            CustomerDataBuilder::SOURCE => self::SOURCE_ID,
+        ];
+
+        $buildSubject = [
+            'payment' => $this->paymentDO,
+        ];
+        
+        $magentoCustomerId = rand();
 
         $this->subjectReaderMock->expects(self::once())
             ->method('readPayment')
             ->with($buildSubject)
             ->willReturn($this->paymentDO);
+
+        $this->paymentDO->expects(static::once())
+            ->method('getPayment')
+            ->willReturn($this->paymentMock);
+        
+        $this->paymentMock->expects(static::once())
+            ->method('getExtensionAttributes')
+            ->willReturn($this->paymentExtensionMock);
+        
+        $this->paymentExtensionMock->expects(static::once())
+            ->method('getVaultPaymentToken')
+            ->willReturn($this->paymentTokenMock);
+        
+        $this->paymentTokenMock->expects(static::once())
+            ->method('getGatewayToken')
+            ->willReturn(self::SOURCE_ID);
+        
+        $this->paymentTokenMock->expects(self::once())
+            ->method('getTokenDetails')
+            ->willReturn('{"tokenType":"source","type":"VI","maskedCC":1234,"expirationDate":"07\/2029"}');
+        
+        $this->paymentTokenMock->expects(static::once())
+            ->method('getCustomerId')
+            ->willReturn($magentoCustomerId);
+        
+        $this->tokenProviderMock->expects(static::once())
+            ->method('getCustomerStripeId')
+            ->with($magentoCustomerId)
+            ->willReturn(self::CUSTOMER_ID);
         
         static::assertEquals(
             $expectedResult,

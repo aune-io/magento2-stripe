@@ -2,8 +2,6 @@
 
 namespace Aune\Stripe\Gateway\Command;
 
-use Stripe\Charge;
-
 use Magento\Framework\Stdlib\DateTime\DateTime;
 use Magento\Framework\Api\FilterBuilder;
 use Magento\Framework\Api\SearchCriteriaBuilder;
@@ -17,6 +15,10 @@ use Magento\Sales\Api\Data\TransactionInterface;
 
 use Aune\Stripe\Gateway\Helper\SubjectReader;
 
+/**
+ * @SuppressWarnings(PHPMD.StaticAccess)
+ * @SuppressWarnings(PHPMD.LongVariable)
+ */
 class CaptureStrategyCommand implements CommandInterface
 {
     /**
@@ -134,10 +136,10 @@ class CaptureStrategyCommand implements CommandInterface
      */
     private function isExpiredAuthorization(OrderPaymentInterface $payment)
     {
-        $ts = $this->dateTime->timestamp();
+        $currentTs = $this->dateTime->timestamp();
         $txTs = $this->dateTime->timestamp($payment->getOrder()->getCreatedAt());
         
-        return $ts - $txTs > self::AUTHORIZATION_TTL;
+        return $currentTs - $txTs > self::AUTHORIZATION_TTL;
     }
 
     /**

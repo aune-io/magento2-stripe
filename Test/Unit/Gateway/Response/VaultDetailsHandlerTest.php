@@ -13,9 +13,14 @@ use Aune\Stripe\Gateway\Config\Config;
 use Aune\Stripe\Gateway\Helper\SubjectReader;
 use Aune\Stripe\Gateway\Response\VaultDetailsHandler;
 
+/**
+ * @SuppressWarnings(PHPMD.StaticAccess)
+ * @SuppressWarnings(PHPMD.LongVariable)
+ */
 class VaultDetailsHandlerTest extends \PHPUnit\Framework\TestCase
 {
     const CUSTOMER_ID = 'cus_123';
+    const SOURCE_ID = 'src_123';
     
     /**
      * @var \Aune\Stripe\Gateway\Response\VaultDetailsHandler
@@ -122,11 +127,11 @@ class VaultDetailsHandlerTest extends \PHPUnit\Framework\TestCase
         
         $paymentToken->expects(self::once())
             ->method('setTokenDetails')
-            ->with('{"type":"VI","maskedCC":1234,"expirationDate":"07\/2029"}');
+            ->with('{"tokenType":"source","type":"VI","maskedCC":1234,"expirationDate":"07\/2029"}');
 
         $paymentToken->expects(self::once())
             ->method('setGatewayToken')
-            ->with(self::CUSTOMER_ID);
+            ->with(self::SOURCE_ID);
 
         $paymentToken->expects(self::once())
             ->method('setExpiresAt')
@@ -169,6 +174,7 @@ class VaultDetailsHandlerTest extends \PHPUnit\Framework\TestCase
             'object' => 'charge',
             'customer' => self::CUSTOMER_ID,
             'source' => [
+                'id' => self::SOURCE_ID,
                 'card' => [
                     'brand' => 'Visa',
                     'exp_month' => 07,

@@ -52,7 +52,6 @@ class PaymentDataBuilder implements BuilderInterface
     public function build(array $buildSubject)
     {
         $paymentDO = $this->subjectReader->readPayment($buildSubject);
-        $payment = $paymentDO->getPayment();
         $order = $paymentDO->getOrder();
         
         // Prepare payload

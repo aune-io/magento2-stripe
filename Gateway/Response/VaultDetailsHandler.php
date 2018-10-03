@@ -13,7 +13,11 @@ use Magento\Vault\Api\Data\PaymentTokenInterfaceFactory;
 
 use Aune\Stripe\Gateway\Config\Config;
 use Aune\Stripe\Gateway\Helper\SubjectReader;
+use Aune\Stripe\Gateway\Helper\TokenProvider;
 
+/**
+ * @SuppressWarnings(PHPMD.LongVariable)
+ */
 class VaultDetailsHandler implements HandlerInterface
 {
     /**
@@ -79,8 +83,8 @@ class VaultDetailsHandler implements HandlerInterface
      */
     protected function getVaultPaymentToken(Charge $charge)
     {
-        // Extract customer id as token
-        $token = $charge->customer;
+        // Extract source id as token
+        $token = $charge->source->id;
         if (empty($token)) {
             return null;
         }
@@ -90,6 +94,7 @@ class VaultDetailsHandler implements HandlerInterface
         $expirationDate = $this->getExpirationDate($charge);
         
         $paymentToken->setTokenDetails($this->convertDetailsToJSON([
+            'tokenType' => TokenProvider::TOKEN_TYPE_SOURCE,
             'type' => $this->getCreditCardType($charge->source->card->brand),
             'maskedCC' => $charge->source->card->last4,
             'expirationDate' => $expirationDate->format('m/Y'),

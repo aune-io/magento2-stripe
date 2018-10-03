@@ -94,7 +94,6 @@ class ChargeCaptureTest extends \PHPUnit\Framework\TestCase
             );
         
         $data = $this->getTransferData();
-        $chargeId = $data[ChargeCaptureDataBuilder::CHARGE_ID];
         unset($data[ChargeCaptureDataBuilder::CHARGE_ID]);
         
         $this->adapter->expects($this->once())

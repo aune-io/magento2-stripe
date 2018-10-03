@@ -13,7 +13,7 @@ class AmountProvider
      * 
      * @var array
      */
-    protected $zeroDecimalCurrencies = [
+    private $zeroDecimal = [
         'BIF',
         'XAF',
         'XPF',
@@ -41,7 +41,7 @@ class AmountProvider
      */
     public function convert($amount, $currency)
     {
-        $multiplier = in_array($currency, $this->zeroDecimalCurrencies) ? 1 : 100;
+        $multiplier = in_array($currency, $this->zeroDecimal) ? 1 : 100;
 
         return (int)($multiplier * $amount);
     }

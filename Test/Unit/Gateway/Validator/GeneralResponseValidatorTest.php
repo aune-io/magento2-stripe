@@ -75,7 +75,8 @@ class GeneralResponseValidatorTest extends \PHPUnit\Framework\TestCase
             ->method('create')
             ->with([
                 'isValid' => $isValid,
-                'failsDescription' => $messages
+                'failsDescription' => $messages,
+                'errorCodes' => [],
             ])
             ->willReturn($resultMock);
 

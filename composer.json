@@ -9,7 +9,7 @@
     ],
     "require": {
         "php": "~7.0.0|~7.1.0",
-        "psr/log": "1.0.2",
+        "psr/log": "~1.0.2|~1.1.0",
         "magento/framework": "101.0.*",
         "magento/module-config": "101.0.*",
         "magento/module-directory": "100.2.*",

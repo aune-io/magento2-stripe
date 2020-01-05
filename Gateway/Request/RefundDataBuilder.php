@@ -8,7 +8,7 @@ use Aune\Stripe\Gateway\Helper\SubjectReader;
 
 class RefundDataBuilder implements BuilderInterface
 {
-    const CHARGE = 'charge';
+    const PAYMENT_INTENT = 'payment_intent';
     const AMOUNT = 'amount';
 
     /**
@@ -41,8 +41,7 @@ class RefundDataBuilder implements BuilderInterface
         $paymentDO = $this->subjectReader->readPayment($buildSubject);
         $payment = $paymentDO->getPayment();
         $order = $paymentDO->getOrder();
-        $amount = null;
-        
+
         try {
             
             $currencyCode = $order->getCurrencyCode();
@@ -51,10 +50,12 @@ class RefundDataBuilder implements BuilderInterface
                 $currencyCode
             );
             
-        } catch (\InvalidArgumentException $e) { }
+        } catch (\InvalidArgumentException $e) {
+            $amount = null;
+        }
         
         return [
-            self::CHARGE => $payment->getLastTransId(),
+            self::PAYMENT_INTENT => $payment->getLastTransId(),
             self::AMOUNT => $amount,
         ];
     }

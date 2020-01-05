@@ -2,7 +2,7 @@
 
 namespace Aune\Stripe\Gateway\Validator;
 
-use Stripe\Charge;
+use Stripe\PaymentIntent;
 use Magento\Payment\Gateway\Validator\ResultInterfaceFactory;
 
 class ResponseValidator extends GeneralResponseValidator
@@ -19,7 +19,7 @@ class ResponseValidator extends GeneralResponseValidator
             [
                 function ($response) {
                     return [
-                        $response instanceof Charge
+                        $response instanceof PaymentIntent
                         && isset($response->status)
                         && $response->status != self::STATUS_FAILED,
                         [__('Wrong transaction status')]

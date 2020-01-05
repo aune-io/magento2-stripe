@@ -31,6 +31,12 @@ $ bin/magento setup:upgrade
 5. Enter your Stripe API Keys and set the payment method as active
 6. (Optional) Enable customer storing in Stripe or Vault to allow customers to reuse their payment methods
 
+## SCA
+Version 4 of the extension supports SCA with the following warnings:
+* vaulting it's not backward compatibile: previous versions of the extension used the source id as gateway token, version 4 uses the payment method id. If you are upgrading, you can either empty the vault or write a script to change the gateway token.
+* partial capture will refund the remaining amount: this is due to how capturing a payment intent works, see the official documentation [here](https://stripe.com/docs/api/payment_intents/capture#capture_payment_intent-amount_to_capture).
+* payment intent confermation is done on the frontend: it is strongly reccommended to use _Authorize_ as _Payment Action_ and capture payments when generating the Magento invoice, to avoid having captured transaction without orders in case of timeouts or server errors.
+
 ## Authors, contributors and maintainers
 
 Author:

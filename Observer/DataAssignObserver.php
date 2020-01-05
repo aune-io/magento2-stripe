@@ -8,13 +8,13 @@ use Magento\Quote\Api\Data\PaymentInterface;
 
 class DataAssignObserver extends AbstractDataAssignObserver
 {
-    const SOURCE = 'source';
+    const PAYMENT_INTENT = 'payment_intent';
 
     /**
      * @var array
      */
     protected $additionalInfo = [
-        self::SOURCE,
+        self::PAYMENT_INTENT,
     ];
 
     /**

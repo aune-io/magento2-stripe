@@ -6,7 +6,7 @@ use Magento\Payment\Gateway\Response\HandlerInterface;
 use Magento\Sales\Model\Order\Payment;
 use Aune\Stripe\Gateway\Helper\SubjectReader;
 
-class ChargeIdHandler implements HandlerInterface
+class PaymentIntentIdHandler implements HandlerInterface
 {
     /**
      * @var SubjectReader
@@ -32,14 +32,14 @@ class ChargeIdHandler implements HandlerInterface
         $paymentDO = $this->subjectReader->readPayment($handlingSubject);
 
         if ($paymentDO->getPayment() instanceof Payment) {
-            /** @var \Stripe\Charge $charge */
-            $charge = $this->subjectReader->readCharge($response);
+            /** @var \Stripe\PaymentIntent $paymentIntent */
+            $paymentIntent = $this->subjectReader->readPaymentIntent($response);
 
             /** @var Payment $orderPayment */
             $orderPayment = $paymentDO->getPayment();
-            $this->setChargeId(
+            $this->setPaymentIntentId(
                 $orderPayment,
-                $charge
+                $paymentIntent
             );
 
             $orderPayment->setIsTransactionClosed($this->shouldCloseTransaction());
@@ -51,14 +51,14 @@ class ChargeIdHandler implements HandlerInterface
 
     /**
      * @param Payment $orderPayment
-     * @param \Stripe\Charge $charge
+     * @param \Stripe\PaymentIntent $paymentIntent
      * @return void
      */
-    protected function setChargeId(
+    protected function setPaymentIntentId(
         Payment $orderPayment,
-        \Stripe\Charge $charge
+        \Stripe\PaymentIntent $paymentIntent
     ) {
-        $orderPayment->setTransactionId($charge->id);
+        $orderPayment->setTransactionId($paymentIntent->id);
     }
 
     /**

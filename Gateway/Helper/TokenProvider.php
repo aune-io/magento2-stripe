@@ -39,17 +39,15 @@ class TokenProvider
      */
     public function getCustomerStripeId(int $magentoCustomerId)
     {
-        $stripeCustomerId = null;
-        
         try {
             $customer = $this->customerRepository->getById($magentoCustomerId);
             $attribute = $customer->getCustomAttribute(self::ATTRIBUTE_CODE);
             if ($attribute instanceof \Magento\Framework\Api\AttributeValue) {
-                $stripeCustomerId = $attribute->getValue();
+                return $attribute->getValue();
             }
-        } catch (NoSuchEntityException $ex) { }
-        
-        return $stripeCustomerId;
+        } catch (NoSuchEntityException $ex) {
+            return null;
+        }
     }
     
     /**
@@ -60,7 +58,9 @@ class TokenProvider
         try {
             $customer = $this->customerRepository->getById($magentoCustomerId);
             $customer->setCustomAttribute(self::ATTRIBUTE_CODE, $stripeCustomerId);
-            $this->customerRepository->save($customer);
-        } catch (NoSuchEntityException $ex) { }
+            return $this->customerRepository->save($customer);
+        } catch (NoSuchEntityException $ex) {
+            return false;
+        }
     }
 }

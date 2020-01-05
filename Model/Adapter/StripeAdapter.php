@@ -4,6 +4,8 @@ namespace Aune\Stripe\Model\Adapter;
 
 use Stripe\Charge;
 use Stripe\Customer;
+use Stripe\PaymentIntent;
+use Stripe\PaymentMethod;
 use Stripe\Refund;
 use Stripe\Stripe;
 
@@ -19,7 +21,7 @@ class StripeAdapter
     const MODULE_NAME = 'Aune_Stripe';
     const APPLICATION_NAME = 'AuneStripeM2';
     const APPLICATION_URL = 'https://gitbub.com/aune/magento2-stripe';
-    const API_VERSION = '2018-08-23';
+    const API_VERSION = '2019-12-03';
     
     /**
      * @var Config
@@ -129,40 +131,30 @@ class StripeAdapter
     }
 
     /**
-     * @param string $chargeId
-     * @return \Stripe\Charge|null
+     * @param array $params
+     * @return \Stripe\PaymentIntent|\Stripe\Error\Base
      */
-    public function chargeRetrieve($chargeId)
+    public function paymentIntentCreate($params)
     {
-        try {
-            return Charge::retrieve($chargeId);
-        } catch (\Exception $e) {
-            return null;
-        }
+        return PaymentIntent::create($params);
     }
 
     /**
-     * @param array $attributes
-     * @return \Stripe\Charge|\Stripe\Error\Base
+     * @param string $paymentIntentId
+     * @return \Stripe\PaymentIntent|\Stripe\Error\Base
      */
-    public function chargeCreate(array $attributes)
+    public function paymentIntentRetrieve($paymentIntentId)
     {
-        return Charge::create($attributes);
+        return PaymentIntent::retrieve($paymentIntentId);
     }
 
     /**
-     * @param string $chargeId
-     * @param null|array $params
-     * @return \Stripe\Charge|\Stripe\Error\Base
+     * @param string $paymentMethodId
+     * @return \Stripe\PaymentMethod|\Stripe\Error\Base
      */
-    public function chargeCapture($chargeId, $params = null)
+    public function paymentMethodRetrieve($paymentMethodId)
     {
-        $charge = $this->chargeRetrieve($chargeId);
-        if (!($charge instanceof Charge)) {
-            return $charge;
-        }
-
-        return $charge->capture($params);
+        return PaymentMethod::retrieve($paymentMethodId);
     }
 
     /**

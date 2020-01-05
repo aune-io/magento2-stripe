@@ -6,12 +6,12 @@ use Magento\Payment\Gateway\Data\PaymentDataObjectInterface;
 use Magento\Sales\Model\Order\Payment;
 
 use Aune\Stripe\Gateway\Helper\SubjectReader;
-use Aune\Stripe\Gateway\Response\ChargeIdHandler;
+use Aune\Stripe\Gateway\Response\PaymentIntentIdHandler;
 
 /**
  * @SuppressWarnings(PHPMD.StaticAccess)
  */
-class ChargeIdHandlerTest extends \PHPUnit\Framework\TestCase
+class PaymentIntentIdHandlerTest extends \PHPUnit\Framework\TestCase
 {
     public function testHandle()
     {
@@ -24,13 +24,13 @@ class ChargeIdHandlerTest extends \PHPUnit\Framework\TestCase
             'payment' => $paymentDO
         ];
 
-        $charge = \Stripe\Util\Util::convertToStripeObject([
-            'object' => 'charge',
+        $paymentIntent = \Stripe\Util\Util::convertToStripeObject([
+            'object' => 'payment_intent',
             'id' => 1,
         ], []);
         
         $response = [
-            'object' => $charge,
+            'object' => $paymentIntent,
         ];
 
         $subjectReader = $this->getMockBuilder(SubjectReader::class)
@@ -45,9 +45,9 @@ class ChargeIdHandlerTest extends \PHPUnit\Framework\TestCase
             ->method('getPayment')
             ->willReturn($paymentInfo);
         $subjectReader->expects(static::once())
-            ->method('readCharge')
+            ->method('readPaymentIntent')
             ->with($response)
-            ->willReturn($charge);
+            ->willReturn($paymentIntent);
 
         $paymentInfo->expects(static::once())
             ->method('setTransactionId')
@@ -60,7 +60,7 @@ class ChargeIdHandlerTest extends \PHPUnit\Framework\TestCase
             ->method('setShouldCloseParentTransaction')
             ->with(false);
 
-        $handler = new ChargeIdHandler($subjectReader);
+        $handler = new PaymentIntentIdHandler($subjectReader);
         $handler->handle($handlingSubject, $response);
     }
 }

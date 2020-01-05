@@ -5,14 +5,13 @@ namespace Aune\Stripe\Test\Unit\Gateway\Http\Client;
 use Psr\Log\LoggerInterface;
 use Magento\Payment\Gateway\Http\TransferInterface;
 use Magento\Payment\Model\Method\Logger;
-use Aune\Stripe\Gateway\Http\Client\ChargeCapture;
-use Aune\Stripe\Gateway\Request\ChargeCaptureDataBuilder;
+use Aune\Stripe\Gateway\Http\Client\RefundCreate;
 use Aune\Stripe\Model\Adapter\StripeAdapter;
 
-class ChargeCaptureTest extends \PHPUnit\Framework\TestCase
+class RefundCreateTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var ChargeCapture
+     * @var RefundCreate
      */
     private $model;
 
@@ -41,7 +40,7 @@ class ChargeCaptureTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->model = new ChargeCapture($criticalLoggerMock, $this->loggerMock, $this->adapter);
+        $this->model = new RefundCreate($criticalLoggerMock, $this->loggerMock, $this->adapter);
     }
 
     /**
@@ -59,13 +58,13 @@ class ChargeCaptureTest extends \PHPUnit\Framework\TestCase
             ->with(
                 [
                     'request' => $this->getTransferData(),
-                    'client' => ChargeCapture::class,
+                    'client' => RefundCreate::class,
                     'response' => []
                 ]
             );
 
         $this->adapter->expects($this->once())
-            ->method('chargeCapture')
+            ->method('refundCreate')
             ->willThrowException(new \Exception('Test message'));
 
         /** @var TransferInterface|\PHPUnit_Framework_MockObject_MockObject $transferObjectMock */
@@ -82,24 +81,21 @@ class ChargeCaptureTest extends \PHPUnit\Framework\TestCase
     public function testPlaceRequestSuccess()
     {
         $response = $this->getResponseObject();
+        
+        $this->adapter->expects($this->once())
+            ->method('refundCreate')
+            ->with($this->getTransferData())
+            ->willReturn($response);
 
         $this->loggerMock->expects($this->once())
             ->method('debug')
             ->with(
                 [
                     'request' => $this->getTransferData(),
-                    'client' => ChargeCapture::class,
-                    'response' => ['success' => 1],
+                    'client' => RefundCreate::class,
+                    'response' => ['success' => 1]
                 ]
             );
-        
-        $data = $this->getTransferData();
-        unset($data[ChargeCaptureDataBuilder::CHARGE_ID]);
-        
-        $this->adapter->expects($this->once())
-            ->method('chargeCapture')
-            ->with($this->getChargeId(), $data)
-            ->willReturn($response);
 
         $actualResult = $this->model->placeRequest($this->getTransferObjectMock());
 
@@ -121,7 +117,7 @@ class ChargeCaptureTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @return array
+     * @return \stdClass
      */
     private function getResponseObject()
     {
@@ -137,7 +133,7 @@ class ChargeCaptureTest extends \PHPUnit\Framework\TestCase
     private function getTransferData()
     {
         return [
-            ChargeCaptureDataBuilder::CHARGE_ID => $this->getChargeId(),
+            'chargeId' => $this->getChargeId(),
             'test-data-key' => 'test-data-value'
         ];
     }

@@ -19,8 +19,7 @@ use Aune\Stripe\Gateway\Response\VaultDetailsHandler;
  */
 class VaultDetailsHandlerTest extends \PHPUnit\Framework\TestCase
 {
-    const CUSTOMER_ID = 'cus_123';
-    const SOURCE_ID = 'src_123';
+    const PAYMENT_METHOD_ID = 'pm_123';
     
     /**
      * @var \Aune\Stripe\Gateway\Response\VaultDetailsHandler
@@ -85,10 +84,10 @@ class VaultDetailsHandlerTest extends \PHPUnit\Framework\TestCase
     public function testHandle()
     {
         $paymentData = $this->getPaymentDataObjectMock();
-        $charge = $this->getStripeCharge();
+        $paymentIntent = $this->getStripePaymentIntent();
 
         $subject = ['payment' => $paymentData];
-        $response = ['object' => $charge];
+        $response = ['object' => $paymentIntent];
 
         $this->subjectReaderMock->expects(self::once())
             ->method('readPayment')
@@ -96,9 +95,9 @@ class VaultDetailsHandlerTest extends \PHPUnit\Framework\TestCase
             ->willReturn($paymentData);
         
         $this->subjectReaderMock->expects(self::once())
-            ->method('readCharge')
+            ->method('readPaymentIntent')
             ->with($response)
-            ->willReturn($charge);
+            ->willReturn($paymentIntent);
         
         $paymentToken = $this->getMockBuilder(PaymentTokenInterface::class)
             ->disableOriginalConstructor()
@@ -131,7 +130,7 @@ class VaultDetailsHandlerTest extends \PHPUnit\Framework\TestCase
 
         $paymentToken->expects(self::once())
             ->method('setGatewayToken')
-            ->with(self::SOURCE_ID);
+            ->with(self::PAYMENT_METHOD_ID);
 
         $paymentToken->expects(self::once())
             ->method('setExpiresAt')
@@ -164,23 +163,28 @@ class VaultDetailsHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create Stripe Charge
+     * Create Stripe Payment Intent
      * 
-     * @return \Stripe\Charge
+     * @return \Stripe\PaymentIntent
      */
-    private function getStripeCharge()
+    private function getStripePaymentIntent()
     {
         $attributes = [
-            'object' => 'charge',
-            'customer' => self::CUSTOMER_ID,
-            'source' => [
-                'id' => self::SOURCE_ID,
-                'card' => [
-                    'brand' => 'Visa',
-                    'exp_month' => 07,
-                    'exp_year' => 29,
-                    'last4' => 1234,
-                ]
+            'object' => 'payment_intent',
+            'payment_method' => self::PAYMENT_METHOD_ID,
+            'charges' => [
+                'object' => 'list',
+                'data' => [[
+                    'object' => 'charge',
+                    'payment_method_details' => [
+                        'card' => [
+                            'brand' => 'Visa',
+                            'exp_month' => 07,
+                            'exp_year' => 29,
+                            'last4' => 1234,
+                        ]
+                    ]
+                ]]
             ]
         ];
         

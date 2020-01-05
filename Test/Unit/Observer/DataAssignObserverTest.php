@@ -11,7 +11,7 @@ use Aune\Stripe\Observer\DataAssignObserver;
 
 class DataAssignObserverTest extends \PHPUnit\Framework\TestCase
 {
-    const SOURCE = 'fwtYU5z5E6e6Dgav8BBUvtqB';
+    const PAYMENT_INTENT_ID = 'fwtYU5z5E6e6Dgav8BBUvtqB';
 
     /**
      * @var Observer|PHPUnit_Framework_MockObject_MockObject
@@ -49,7 +49,7 @@ class DataAssignObserverTest extends \PHPUnit\Framework\TestCase
         $dataObject = new DataObject(
             [
                 PaymentInterface::KEY_ADDITIONAL_DATA => [
-                    'source' => self::SOURCE,
+                    'payment_intent' => self::PAYMENT_INTENT_ID,
                 ]
             ]
         );
@@ -69,7 +69,7 @@ class DataAssignObserverTest extends \PHPUnit\Framework\TestCase
         
         $this->paymentInfoModel->expects(static::at(0))
             ->method('setAdditionalInformation')
-            ->with('source', self::SOURCE);
+            ->with('payment_intent', self::PAYMENT_INTENT_ID);
 
         $observer = new DataAssignObserver();
         $observer->execute($this->observerContainer);

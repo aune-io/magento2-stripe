@@ -50,12 +50,13 @@ class CardDetailsHandler implements HandlerInterface
     public function handle(array $handlingSubject, array $response)
     {
         $paymentDO = $this->subjectReader->readPayment($handlingSubject);
-        $charge = $this->subjectReader->readCharge($response);
+        $paymentIntent = $this->subjectReader->readPaymentIntent($response);
 
         $payment = $paymentDO->getPayment();
         ContextHelper::assertOrderPayment($payment);
 
-        $card = $charge->source->card;
+        $charge = $paymentIntent->charges->data[0];
+        $card = $charge->payment_method_details->card;
         $payment->setCcLast4($card->last4);
         $payment->setCcExpMonth($card->exp_month);
         $payment->setCcExpYear($card->exp_year);

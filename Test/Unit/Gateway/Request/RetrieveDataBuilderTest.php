@@ -11,20 +11,20 @@ use Magento\Vault\Model\Ui\VaultConfigProvider;
 use Aune\Stripe\Gateway\Config\Config;
 use Aune\Stripe\Gateway\Helper\SubjectReader;
 use Aune\Stripe\Gateway\Helper\TokenProvider;
-use Aune\Stripe\Gateway\Request\SourceDataBuilder;
+use Aune\Stripe\Gateway\Request\RetrieveDataBuilder;
 use Aune\Stripe\Model\Adapter\StripeAdapter;
 use Aune\Stripe\Observer\DataAssignObserver;
 
 /**
  * @SuppressWarnings(PHPMD.CouplingBetweenObjects)
  */
-class SourceDataBuilderTest extends \PHPUnit\Framework\TestCase
+class RetrieveDataBuilderTest extends \PHPUnit\Framework\TestCase
 {
     const CUSTOMER_ID = 'cus_123';
-    const SOURCE_ID = 'src_123';
+    const PAYMENT_INTENT_ID = 'pi_123';
 
     /**
-     * @var SourceDataBuilder
+     * @var RetrieveDataBuilder
      */
     private $builder;
 
@@ -89,7 +89,7 @@ class SourceDataBuilderTest extends \PHPUnit\Framework\TestCase
         $this->orderMock = $this->getMockForAbstractClass(OrderAdapterInterface::class);
         $this->addressMock = $this->getMockForAbstractClass(AddressAdapterInterface::class);
 
-        $this->builder = new SourceDataBuilder(
+        $this->builder = new RetrieveDataBuilder(
             $this->configMock,
             $this->subjectReaderMock,
             $this->adapter,
@@ -98,19 +98,19 @@ class SourceDataBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Tests source data builder with no tokenization
+     * Tests builder with no tokenization
      * 
-     * @covers \Aune\Stripe\Gateway\Request\SourceDataBuilder::build
+     * @covers \Aune\Stripe\Gateway\Request\RetrieveDataBuilder::build
      */
     public function testBuild()
     {
         $additionalData = [
-            [ DataAssignObserver::SOURCE, self::SOURCE_ID ],
+            [ DataAssignObserver::PAYMENT_INTENT, self::PAYMENT_INTENT_ID ],
             [ VaultConfigProvider::IS_ACTIVE_CODE, false ],
         ];
 
         $expectedResult = [
-            SourceDataBuilder::SOURCE  => self::SOURCE_ID,
+            RetrieveDataBuilder::PAYMENT_INTENT  => self::PAYMENT_INTENT_ID,
         ];
 
         $buildSubject = [
@@ -141,22 +141,22 @@ class SourceDataBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Tests source data builder with customer store enabled
+     * Tests builder with customer store enabled
      * 
-     * @covers \Aune\Stripe\Gateway\Request\SourceDataBuilder::build
+     * @covers \Aune\Stripe\Gateway\Request\RetrieveDataBuilder::build
      */
     public function testBuildStoreCustomer()
     {
         $customerId = rand();
         
         $additionalData = [
-            [ DataAssignObserver::SOURCE, self::SOURCE_ID ],
+            [ DataAssignObserver::PAYMENT_INTENT, self::PAYMENT_INTENT_ID ],
             [ VaultConfigProvider::IS_ACTIVE_CODE, false ],
         ];
 
         $expectedResult = [
-            SourceDataBuilder::CUSTOMER  => self::CUSTOMER_ID,
-            SourceDataBuilder::SOURCE  => self::SOURCE_ID,
+            RetrieveDataBuilder::CUSTOMER => self::CUSTOMER_ID,
+            RetrieveDataBuilder::PAYMENT_INTENT => self::PAYMENT_INTENT_ID,
         ];
 
         $buildSubject = [
@@ -204,10 +204,6 @@ class SourceDataBuilderTest extends \PHPUnit\Framework\TestCase
             ->with($customerRequest)
             ->willReturn($stripeCustomer);
 
-        $this->adapter->expects(self::once())
-            ->method('customerAttachSource')
-            ->with($stripeCustomer, self::SOURCE_ID);
-
         static::assertEquals(
             $expectedResult,
             $this->builder->build($buildSubject)
@@ -215,22 +211,22 @@ class SourceDataBuilderTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Tests source data builder with vault enabled
+     * Tests builder with vault enabled
      * 
-     * @covers \Aune\Stripe\Gateway\Request\SourceDataBuilder::build
+     * @covers \Aune\Stripe\Gateway\Request\RetrieveDataBuilder::build
      */
     public function testBuildVault()
     {
         $customerId = rand();
         
         $additionalData = [
-            [ DataAssignObserver::SOURCE, self::SOURCE_ID ],
+            [ DataAssignObserver::PAYMENT_INTENT, self::PAYMENT_INTENT_ID ],
             [ VaultConfigProvider::IS_ACTIVE_CODE, true ],
         ];
 
         $expectedResult = [
-            SourceDataBuilder::CUSTOMER  => self::CUSTOMER_ID,
-            SourceDataBuilder::SOURCE  => self::SOURCE_ID,
+            RetrieveDataBuilder::CUSTOMER => self::CUSTOMER_ID,
+            RetrieveDataBuilder::PAYMENT_INTENT => self::PAYMENT_INTENT_ID,
         ];
 
         $buildSubject = [
@@ -274,10 +270,6 @@ class SourceDataBuilderTest extends \PHPUnit\Framework\TestCase
             ->with($customerRequest)
             ->willReturn($stripeCustomer);
 
-        $this->adapter->expects(self::once())
-            ->method('customerAttachSource')
-            ->with($stripeCustomer, self::SOURCE_ID);
-
         static::assertEquals(
             $expectedResult,
             $this->builder->build($buildSubject)
@@ -285,19 +277,19 @@ class SourceDataBuilderTest extends \PHPUnit\Framework\TestCase
     }
     
     /**
-     * Tests source data builder with vault enabled on guest order
+     * Tests builder with vault enabled on guest order
      * 
-     * @covers \Aune\Stripe\Gateway\Request\SourceDataBuilder::build
+     * @covers \Aune\Stripe\Gateway\Request\RetrieveDataBuilder::build
      */
     public function testBuildVaultGuest()
     {
         $additionalData = [
-            [ DataAssignObserver::SOURCE, self::SOURCE_ID ],
+            [ DataAssignObserver::PAYMENT_INTENT, self::PAYMENT_INTENT_ID ],
             [ VaultConfigProvider::IS_ACTIVE_CODE, true ],
         ];
 
         $expectedResult = [
-            SourceDataBuilder::SOURCE  => self::SOURCE_ID,
+            RetrieveDataBuilder::PAYMENT_INTENT => self::PAYMENT_INTENT_ID,
         ];
 
         $buildSubject = [
@@ -332,23 +324,23 @@ class SourceDataBuilderTest extends \PHPUnit\Framework\TestCase
     }
     
     /**
-     * Tests source data builder with vault enabled and customer already
+     * Tests builder with vault enabled and customer already
      * saved in Stripe
      * 
-     * @covers \Aune\Stripe\Gateway\Request\SourceDataBuilder::build
+     * @covers \Aune\Stripe\Gateway\Request\RetrieveDataBuilder::build
      */
     public function testBuildVaultExisting()
     {
         $customerId = rand();
         
         $additionalData = [
-            [ DataAssignObserver::SOURCE, self::SOURCE_ID ],
+            [ DataAssignObserver::PAYMENT_INTENT, self::PAYMENT_INTENT_ID ],
             [ VaultConfigProvider::IS_ACTIVE_CODE, true ],
         ];
 
         $expectedResult = [
-            SourceDataBuilder::CUSTOMER  => self::CUSTOMER_ID,
-            SourceDataBuilder::SOURCE  => self::SOURCE_ID,
+            RetrieveDataBuilder::CUSTOMER => self::CUSTOMER_ID,
+            RetrieveDataBuilder::PAYMENT_INTENT => self::PAYMENT_INTENT_ID,
         ];
 
         $buildSubject = [
@@ -386,10 +378,6 @@ class SourceDataBuilderTest extends \PHPUnit\Framework\TestCase
             ->method('customerRetrieve')
             ->with(self::CUSTOMER_ID)
             ->willReturn($stripeCustomer);
-        
-        $this->adapter->expects(self::once())
-            ->method('customerAttachSource')
-            ->with($stripeCustomer, self::SOURCE_ID);
 
         static::assertEquals(
             $expectedResult,

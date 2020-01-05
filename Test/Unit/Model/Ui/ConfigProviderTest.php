@@ -2,23 +2,20 @@
 
 namespace Aune\Stripe\Test\Unit\Model\Ui;
 
+use Magento\Checkout\Model\Session;
 use Aune\Stripe\Gateway\Config\Config;
-use Aune\Stripe\Model\Adapter\StripeAdapter;
+use Aune\Stripe\Gateway\Helper\PaymentIntentProvider;
 use Aune\Stripe\Model\Ui\ConfigProvider;
 
 class ConfigProviderTest extends \PHPUnit\Framework\TestCase
 {
     const SDK_URL = 'https://js.stripe.com/v3/';
+    const PAYMENT_INTENT_URL = 'url';
 
     /**
      * @var Config|PHPUnit_Framework_MockObject_MockObject
      */
     private $config;
-
-    /**
-     * @var StripeAdapter|PHPUnit_Framework_MockObject_MockObject
-     */
-    private $stripeAdapter;
 
     /**
      * @var ConfigProvider
@@ -31,13 +28,8 @@ class ConfigProviderTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->stripeAdapter = $this->getMockBuilder(StripeAdapter::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-
         $this->configProvider = new ConfigProvider(
-            $this->config,
-            $this->stripeAdapter
+            $this->config
         );
     }
 
@@ -76,6 +68,7 @@ class ConfigProviderTest extends \PHPUnit\Framework\TestCase
                     'isActive' => $isActive,
                     'getPublishableKey' => $publishableKey,
                     'getSdkUrl' => self::SDK_URL,
+                    'getPaymentIntentUrl' => self::PAYMENT_INTENT_URL,
                 ],
                 'expected' => [
                     'payment' => [
@@ -83,7 +76,8 @@ class ConfigProviderTest extends \PHPUnit\Framework\TestCase
                             'isActive' => $isActive,
                             'publishableKey' => $publishableKey,
                             'sdkUrl' => self::SDK_URL,
-                            'ccVaultCode' => ConfigProvider::VAULT_CODE
+                            'ccVaultCode' => ConfigProvider::VAULT_CODE,
+                            'paymentIntentUrl' => self::PAYMENT_INTENT_URL,
                         ],
                     ]
                 ]

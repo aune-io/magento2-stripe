@@ -5,6 +5,7 @@ language: php
 php:
     - 7.1
     - 7.2
+    - 7.3
 
 install:
     - mkdir -p ~/.composer/
@@ -14,7 +15,7 @@ install:
 
 script:
     - php marketplace-eqp/vendor/bin/phpcs Block/ Gateway/ Model/ Observer/ Setup/ Test/ view/ --standard=MEQP2 --severity=10
-    - php vendor/bin/phpmd Block/,Gateway/,Model/,Observer/,Setup/,Test/,view/ text cleancode,codesize,controversial,design,naming,unusedcode --ignore-violations-on-exit
+    - php vendor/bin/phpmd Block/,Gateway/,Model/,Observer/,Setup/,view/ text cleancode,codesize,controversial,design,naming,unusedcode --ignore-violations-on-exit
     - php vendor/phpunit/phpunit/phpunit --coverage-clover Test/Unit/logs/clover.xml Test
 
 after_script:

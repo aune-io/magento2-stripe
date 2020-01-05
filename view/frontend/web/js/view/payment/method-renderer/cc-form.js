@@ -27,9 +27,10 @@ define(
         return Component.extend({
             defaults: {
                 template: 'Aune_Stripe/payment/cc-form',
-                source: null,
                 stripe: null,
                 cardElement: null,
+                paymentIntent: null,
+                paymentIntentUrl: null,
                 fieldErrorMessages: {
                     card: ko.observable(false),
                     expiry: ko.observable(false),
@@ -56,14 +57,16 @@ define(
                 if (!config) {
                     return;
                 }
-                
+
+                this.paymentIntentUrl = config.paymentIntentUrl;
+
                 var self = this;
                 require([config.sdkUrl], function () {
                     // Initialise Stripe
-                    self.stripe = Stripe(config.publishableKey);
+                    window.stripe = Stripe(config.publishableKey);
                     
                     // Initialise elements
-                    var elements = self.stripe.elements();
+                    var elements = window.stripe.elements();
                     self.cardElement = elements.create('cardNumber');
                     self.cardElement.mount('#' + self.getCode() + '_cc_number');
                     self.cardElement.on('change', self.onFieldChange('card'));
@@ -115,7 +118,7 @@ define(
                 var data = {
                     'method': this.item.method,
                     'additional_data': {
-                        'source': this.source
+                        'payment_intent': this.paymentIntent
                     }
                 };
                 
@@ -125,12 +128,12 @@ define(
             },
 
             /**
-             * Set source
+             * Set payment intent
              * 
-             * @param {String} source
+             * @param {String} paymentIntent
              */
-            setSource: function (source) {
-                this.source = source;
+            setPaymentIntent: function (paymentIntent) {
+                this.paymentIntent = paymentIntent;
             },
             
             /**
@@ -139,15 +142,20 @@ define(
              * @param {Object} data
              */
             placeOrderClick: function () {
-                if (!this.stripe || !this.cardElement) {
+                if (!window.stripe || !this.cardElement) {
                     console.err('Stripe or CardElement not found');
                     return;
                 }
                 
-                var cardData = { };
+                var data = {
+                    payment_method: {
+                        card: this.cardElement
+                    }
+                };
+                
                 var billingAddress = quote.billingAddress();
                 if (billingAddress) {
-                    cardData.owner = {
+                    data.payment_method.billing_details = {
                         name: billingAddress.firstname + ' ' + billingAddress.lastname,
                         phone: billingAddress.telephone,
                         address: {
@@ -162,22 +170,32 @@ define(
                 }
 
                 var self = this;
-                this.stripe.createSource(this.cardElement, cardData)
-                    .then(function (result) {
-                        if (result.error) {
-                            var message = result.error.message;
-                            if (result.error.type == 'validation_error') {
-                                message = $t('Please verify you card information.');
+                $.get(this.paymentIntentUrl, {}, function(response) {
+
+                    if (!response || !response.paymentIntent || !response.paymentIntent.clientSecret) {
+                        messageList.addErrorMessage({
+                            message: $t('An error occurred generating the payment intent.')
+                        });
+                        return;
+                    }
+
+                    window.stripe.confirmCardPayment(response.paymentIntent.clientSecret, data)
+                        .then(function (result) {
+                            if (result.error) {
+                                var message = result.error.message;
+                                if (result.error.type == 'validation_error') {
+                                    message = $t('Please verify you card information.');
+                                }
+                                messageList.addErrorMessage({
+                                    message: message
+                                });
+                                return;
                             }
-                            messageList.addErrorMessage({
-                                message: message
-                            });
-                            return;
-                        }
-                        
-                        self.setSource(result.source.id);
-                        self.placeOrder();
-                    });
+                            
+                            self.setPaymentIntent(result.paymentIntent.id);
+                            self.placeOrder();
+                        });
+                });
             },
 
             /**

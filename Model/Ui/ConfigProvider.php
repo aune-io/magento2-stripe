@@ -17,7 +17,6 @@ final class ConfigProvider implements ConfigProviderInterface
 
     /**
      * @param Config $config
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __construct(
         Config $config
@@ -38,7 +37,8 @@ final class ConfigProvider implements ConfigProviderInterface
                     'isActive' => $this->config->isActive(),
                     'publishableKey' => $this->config->getPublishableKey(),
                     'sdkUrl' => $this->config->getSdkUrl(),
-                    'ccVaultCode' => self::VAULT_CODE
+                    'ccVaultCode' => self::VAULT_CODE,
+                    'paymentIntentUrl' => $this->config->getPaymentIntentUrl(),
                 ],
             ]
         ];

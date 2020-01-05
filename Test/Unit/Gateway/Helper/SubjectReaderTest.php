@@ -2,8 +2,6 @@
 
 namespace Aune\Stripe\Test\Unit\Gateway\Helper;
 
-use InvalidArgumentException;
-use Stripe\Charge;
 use Aune\Stripe\Gateway\Helper\SubjectReader;
 
 class SubjectReaderTest extends \PHPUnit\Framework\TestCase
@@ -41,7 +39,7 @@ class SubjectReaderTest extends \PHPUnit\Framework\TestCase
     /**
      * @covers \Aune\Stripe\Gateway\Helper\SubjectReader::readPublicHash
      * 
-     * @expectedException InvalidArgumentException
+     * @expectedException \InvalidArgumentException
      * @expectedExceptionMessage The "public_hash" field does not exists
      */
     public function testReadPublicHashWithException()

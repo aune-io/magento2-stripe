@@ -80,12 +80,14 @@ class RefundCreateTest extends \PHPUnit\Framework\TestCase
      */
     public function testPlaceRequestSuccess()
     {
-        $response = $this->getResponseObject();
+        $refundMock = $this->getMockBuilder(\Stripe\Refund::class)
+            ->disableOriginalConstructor()
+            ->getMock();
         
         $this->adapter->expects($this->once())
             ->method('refundCreate')
             ->with($this->getTransferData())
-            ->willReturn($response);
+            ->willReturn($refundMock);
 
         $this->loggerMock->expects($this->once())
             ->method('debug')
@@ -93,14 +95,14 @@ class RefundCreateTest extends \PHPUnit\Framework\TestCase
                 [
                     'request' => $this->getTransferData(),
                     'client' => RefundCreate::class,
-                    'response' => ['success' => 1]
+                    'response' => (array)$refundMock,
                 ]
             );
 
         $actualResult = $this->model->placeRequest($this->getTransferObjectMock());
 
         $this->assertTrue(is_object($actualResult['object']));
-        $this->assertEquals(['object' => $response], $actualResult);
+        $this->assertEquals(['object' => $refundMock], $actualResult);
     }
 
     /**
@@ -117,29 +119,12 @@ class RefundCreateTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @return \stdClass
-     */
-    private function getResponseObject()
-    {
-        $obj = new \stdClass;
-        $obj->success = true;
-
-        return $obj;
-    }
-
-    /**
      * @return array
      */
     private function getTransferData()
     {
         return [
-            'chargeId' => $this->getChargeId(),
             'test-data-key' => 'test-data-value'
         ];
-    }
-    
-    private function getChargeId()
-    {
-        return 'nfkuc4bvFynV8c62zCsEckeL';
     }
 }

@@ -54,8 +54,9 @@ class PaymentDetailsHandler implements HandlerInterface
     {
         $paymentDO = $this->subjectReader->readPayment($handlingSubject);
         
-        /** @var \Stripe\Charge $charge */
-        $charge = $this->subjectReader->readCharge($response);
+        /** @var \Stripe\PaymentIntent $paymentIntent */
+        $paymentIntent = $this->subjectReader->readPaymentIntent($response);
+        $charge = $paymentIntent->charges->data[0];
         
         /** @var OrderPaymentInterface $payment */
         $payment = $paymentDO->getPayment();

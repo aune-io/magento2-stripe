@@ -4,6 +4,7 @@ namespace Aune\Stripe\Test\Unit\Gateway\Config;
 
 use Magento\Framework\App\Config\ScopeConfigInterface;
 use Magento\Framework\Encryption\Encryptor;
+use Magento\Framework\UrlInterface;
 
 use Aune\Stripe\Gateway\Config\Config;
 
@@ -23,6 +24,11 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
      * @var Encryptor|PHPUnit_Framework_MockObject_MockObject
      */
     private $encryptorMock;
+
+    /**
+     * @var UrlHelper|PHPUnit_Framework_MockObject_MockObject
+     */
+    private $urlHelperMock;
     
     /**
      * @var Config
@@ -35,10 +41,12 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
         $this->encryptorMock = $this->getMockBuilder(Encryptor::class)
             ->disableOriginalConstructor()
             ->getMock();
-        
+        $this->urlHelperMock = $this->getMockForAbstractClass(UrlInterface::class);
+
         $this->config = new Config(
             $this->scopeConfigMock,
             $this->encryptorMock,
+            $this->urlHelperMock,
             self::METHOD_CODE
         );
     }
@@ -85,5 +93,20 @@ class ConfigTest extends \PHPUnit\Framework\TestCase
             ['key' => Config::KEY_CC_TYPES_STRIPE_MAPPER, 'method' => 'getCcTypesMapper', 'in' => null, 'out' => [], 'secret' => false],
             ['key' => Config::KEY_CC_TYPES_STRIPE_MAPPER, 'method' => 'getCcTypesMapper', 'in' => '{"american-express":"AE","discover":"DI"}', 'out' => ['american-express' => 'AE', 'discover' => 'DI'], 'secret' => false],
         ];
+    }
+
+    /**
+     * Test payment intent generation url getter
+     */
+    public function testGetPaymentIntentUrl()
+    {
+        $url = 'test_url';
+
+        $this->urlHelperMock->expects(self::once())
+            ->method('getUrl')
+            ->with(Config::PAYMENT_INTENT_PATH)
+            ->willReturn($url);
+
+        self::assertEquals($url, $this->config->getPaymentIntentUrl());
     }
 }

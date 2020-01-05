@@ -5,13 +5,16 @@ namespace Aune\Stripe\Test\Unit\Gateway\Http\Client;
 use Psr\Log\LoggerInterface;
 use Magento\Payment\Gateway\Http\TransferInterface;
 use Magento\Payment\Model\Method\Logger;
-use Aune\Stripe\Gateway\Http\Client\Charge;
+use Aune\Stripe\Gateway\Http\Client\PaymentIntentCapture;
+use Aune\Stripe\Gateway\Request\CaptureDataBuilder;
 use Aune\Stripe\Model\Adapter\StripeAdapter;
 
-class ChargeTest extends \PHPUnit\Framework\TestCase
+class PaymentIntentCaptureTest extends \PHPUnit\Framework\TestCase
 {
+    const PAYMENT_INTENT_ID = 'pi_123';
+
     /**
-     * @var Charge
+     * @var ChargeCapture
      */
     private $model;
 
@@ -40,7 +43,7 @@ class ChargeTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->model = new Charge($criticalLoggerMock, $this->loggerMock, $this->adapter);
+        $this->model = new PaymentIntentCapture($criticalLoggerMock, $this->loggerMock, $this->adapter);
     }
 
     /**
@@ -58,13 +61,13 @@ class ChargeTest extends \PHPUnit\Framework\TestCase
             ->with(
                 [
                     'request' => $this->getTransferData(),
-                    'client' => Charge::class,
+                    'client' => PaymentIntentCapture::class,
                     'response' => []
                 ]
             );
 
         $this->adapter->expects($this->once())
-            ->method('chargeCreate')
+            ->method('paymentIntentRetrieve')
             ->willThrowException(new \Exception('Test message'));
 
         /** @var TransferInterface|\PHPUnit_Framework_MockObject_MockObject $transferObjectMock */
@@ -80,26 +83,32 @@ class ChargeTest extends \PHPUnit\Framework\TestCase
      */
     public function testPlaceRequestSuccess()
     {
-        $response = $this->getResponseObject();
-        $this->adapter->expects($this->once())
-            ->method('chargeCreate')
-            ->with($this->getTransferData())
-            ->willReturn($response);
+        $paymentIntentMock = $this->getMockBuilder(\Stripe\PaymentIntent::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
+        $this->adapter->expects(self::once())
+            ->method('paymentIntentRetrieve')
+            ->with(self::PAYMENT_INTENT_ID)
+            ->willReturn($paymentIntentMock);
+
+        $paymentIntentMock->expects(self::once())
+            ->method('capture');
 
         $this->loggerMock->expects($this->once())
             ->method('debug')
             ->with(
                 [
                     'request' => $this->getTransferData(),
-                    'client' => Charge::class,
-                    'response' => ['success' => 1],
+                    'client' => PaymentIntentCapture::class,
+                    'response' => (array)$paymentIntentMock,
                 ]
             );
 
         $actualResult = $this->model->placeRequest($this->getTransferObjectMock());
 
         $this->assertTrue(is_object($actualResult['object']));
-        $this->assertEquals(['object' => $response], $actualResult);
+        $this->assertEquals(['object' => $paymentIntentMock], $actualResult);
     }
 
     /**
@@ -116,22 +125,12 @@ class ChargeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @return \stdClass
-     */
-    private function getResponseObject()
-    {
-        $obj = new \stdClass;
-        $obj->success = true;
-
-        return $obj;
-    }
-
-    /**
      * @return array
      */
     private function getTransferData()
     {
         return [
+            CaptureDataBuilder::PAYMENT_INTENT => self::PAYMENT_INTENT_ID,
             'test-data-key' => 'test-data-value'
         ];
     }

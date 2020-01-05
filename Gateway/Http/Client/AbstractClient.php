@@ -49,11 +49,14 @@ abstract class AbstractClient implements ClientInterface
     public function placeRequest(TransferInterface $transferObject)
     {
         $data = $transferObject->getBody();
+        $response = [
+            'object' => [],
+        ];
+
         $log = [
             'request' => $data,
             'client' => static::class
         ];
-        $response['object'] = [];
 
         try {
             $response['object'] = $this->process($data);

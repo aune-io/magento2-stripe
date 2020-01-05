@@ -43,11 +43,20 @@
                         <field id="active">1</field>
                     </depends>
                 </field>
-                <field id="debug" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="store_future_usage" translate="label" type="select" sortOrder="70" showInDefault="1" showInWebsite="1" showInStore="0">
+                    <label>Future Usage</label>
+                    <comment>Use On Session if you intend to only reuse the payment method when your customer is present in your checkout flow. Use Off Session if your customer may or may not be in your checkout flow.</comment>
+                    <source_model>Aune\Stripe\Model\Adminhtml\Source\FutureUsage</source_model>
+                    <depends>
+                        <field id="active">1</field>
+                        <field id="store_customer">1</field>
+                    </depends>
+                </field>
+                <field id="debug" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Enable Debug</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                 </field>
-                <field id="aune_stripe_vault_active" translate="label" type="select" sortOrder="80" showInDefault="1" showInWebsite="1" showInStore="0">
+                <field id="aune_stripe_vault_active" translate="label" type="select" sortOrder="90" showInDefault="1" showInWebsite="1" showInStore="0">
                     <label>Vault Enabled</label>
                     <source_model>Magento\Config\Model\Config\Source\Yesno</source_model>
                     <config_path>payment/aune_stripe_vault/active</config_path>

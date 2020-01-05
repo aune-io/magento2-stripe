@@ -16,10 +16,10 @@ use Aune\Stripe\Gateway\Helper\TokenProvider;
 use Aune\Stripe\Model\Adapter\StripeAdapter;
 use Aune\Stripe\Observer\DataAssignObserver;
 
-class SourceDataBuilder implements BuilderInterface
+class RetrieveDataBuilder implements BuilderInterface
 {
-    const SOURCE = 'source';
     const CUSTOMER = 'customer';
+    const PAYMENT_INTENT = 'payment_intent';
 
     /**
      * @var Config
@@ -30,7 +30,12 @@ class SourceDataBuilder implements BuilderInterface
      * @var SubjectReader
      */
     private $subjectReader;
-    
+
+    /**
+     * @var StripeAdapter
+     */
+    private $stripeAdapter;
+
     /**
      * @var TokenProvider
      */
@@ -62,27 +67,22 @@ class SourceDataBuilder implements BuilderInterface
         $paymentDO = $this->subjectReader->readPayment($buildSubject);
         $payment = $paymentDO->getPayment();
         $orderAdapter = $paymentDO->getOrder();
-        
-        $sourceId = $payment->getAdditionalInformation(DataAssignObserver::SOURCE);
-        
-        // If vaulting is enabled, assign the customer id
+
+        $paymentIntentId = $payment->getAdditionalInformation(DataAssignObserver::PAYMENT_INTENT);
+        $data = [
+            self::PAYMENT_INTENT => $paymentIntentId,
+        ];
+
+        // If vaulting is enabled, assign the payment intent to the customer
         if ($this->canVaultCustomer($orderAdapter, $payment)) {
-            
+
             // Attach new source to customer
             $stripeCustomer = $this->getStripeCustomer($orderAdapter);
-            
-            $this->stripeAdapter->customerAttachSource($stripeCustomer, $sourceId);
-            
-            return [
-                self::SOURCE => $sourceId,
-                self::CUSTOMER => $stripeCustomer->id,
-            ];
+
+            $data[self::CUSTOMER] = $stripeCustomer->id;
         }
-        
-        // Otherwise assign the payment source
-        return [
-            self::SOURCE => $sourceId,
-        ];
+
+        return $data;
     }
     
     /**

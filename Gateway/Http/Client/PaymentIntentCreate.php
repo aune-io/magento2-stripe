@@ -2,13 +2,13 @@
 
 namespace Aune\Stripe\Gateway\Http\Client;
 
-class ChargeRefund extends AbstractClient
+class PaymentIntentCreate extends AbstractClient
 {
     /**
      * @inheritdoc
      */
     protected function process(array $data)
     {
-        return $this->adapter->refundCreate($data);
+        return $this->adapter->paymentIntentCreate($data);
     }
 }

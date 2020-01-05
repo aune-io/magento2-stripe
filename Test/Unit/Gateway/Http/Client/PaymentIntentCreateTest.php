@@ -5,13 +5,13 @@ namespace Aune\Stripe\Test\Unit\Gateway\Http\Client;
 use Psr\Log\LoggerInterface;
 use Magento\Payment\Gateway\Http\TransferInterface;
 use Magento\Payment\Model\Method\Logger;
-use Aune\Stripe\Gateway\Http\Client\ChargeRefund;
+use Aune\Stripe\Gateway\Http\Client\PaymentIntentCreate;
 use Aune\Stripe\Model\Adapter\StripeAdapter;
 
-class ChargeRefundTest extends \PHPUnit\Framework\TestCase
+class PaymentIntentCreateTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * @var ChargeRefund
+     * @var PaymentIntentCreate
      */
     private $model;
 
@@ -40,7 +40,7 @@ class ChargeRefundTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
 
-        $this->model = new ChargeRefund($criticalLoggerMock, $this->loggerMock, $this->adapter);
+        $this->model = new PaymentIntentCreate($criticalLoggerMock, $this->loggerMock, $this->adapter);
     }
 
     /**
@@ -58,13 +58,13 @@ class ChargeRefundTest extends \PHPUnit\Framework\TestCase
             ->with(
                 [
                     'request' => $this->getTransferData(),
-                    'client' => ChargeRefund::class,
+                    'client' => PaymentIntentCreate::class,
                     'response' => []
                 ]
             );
 
         $this->adapter->expects($this->once())
-            ->method('refundCreate')
+            ->method('paymentIntentCreate')
             ->willThrowException(new \Exception('Test message'));
 
         /** @var TransferInterface|\PHPUnit_Framework_MockObject_MockObject $transferObjectMock */
@@ -80,27 +80,29 @@ class ChargeRefundTest extends \PHPUnit\Framework\TestCase
      */
     public function testPlaceRequestSuccess()
     {
-        $response = $this->getResponseObject();
-        
-        $this->adapter->expects($this->once())
-            ->method('refundCreate')
-            ->with($this->getTransferData())
-            ->willReturn($response);
+        $paymentIntentMock = $this->getMockBuilder(\Stripe\PaymentIntent::class)
+            ->disableOriginalConstructor()
+            ->getMock();
 
-        $this->loggerMock->expects($this->once())
+        $this->adapter->expects(self::once())
+            ->method('paymentIntentCreate')
+            ->with($this->getTransferData())
+            ->willReturn($paymentIntentMock);
+
+        $this->loggerMock->expects(self::once())
             ->method('debug')
             ->with(
                 [
                     'request' => $this->getTransferData(),
-                    'client' => ChargeRefund::class,
-                    'response' => ['success' => 1]
+                    'client' => PaymentIntentCreate::class,
+                    'response' => (array)$paymentIntentMock,
                 ]
             );
 
         $actualResult = $this->model->placeRequest($this->getTransferObjectMock());
 
         $this->assertTrue(is_object($actualResult['object']));
-        $this->assertEquals(['object' => $response], $actualResult);
+        $this->assertEquals(['object' => $paymentIntentMock], $actualResult);
     }
 
     /**
@@ -117,29 +119,12 @@ class ChargeRefundTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * @return \stdClass
-     */
-    private function getResponseObject()
-    {
-        $obj = new \stdClass;
-        $obj->success = true;
-
-        return $obj;
-    }
-
-    /**
      * @return array
      */
     private function getTransferData()
     {
         return [
-            'chargeId' => $this->getChargeId(),
             'test-data-key' => 'test-data-value'
         ];
-    }
-    
-    private function getChargeId()
-    {
-        return 'nfkuc4bvFynV8c62zCsEckeL';
     }
 }

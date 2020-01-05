@@ -53,19 +53,19 @@ class CardDetailsHandlerTest extends \PHPUnit\Framework\TestCase
     public function testHandle()
     {
         $paymentData = $this->getPaymentDataObjectMock();
-        $charge = $this->getStripeCharge();
+        $paymentIntent = $this->getStripePaymentIntent();
 
         $subject = ['payment' => $paymentData];
-        $response = ['object' => $charge];
+        $response = ['object' => $paymentIntent];
 
         $this->subjectReaderMock->expects(self::once())
             ->method('readPayment')
             ->with($subject)
             ->willReturn($paymentData);
         $this->subjectReaderMock->expects(self::once())
-            ->method('readCharge')
+            ->method('readPaymentIntent')
             ->with($response)
-            ->willReturn($charge);
+            ->willReturn($paymentIntent);
 
         $this->payment->expects(static::once())
             ->method('setCcLast4');
@@ -112,21 +112,27 @@ class CardDetailsHandlerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Create Stripe Charge
+     * Create Stripe Payment Intent
      * 
-     * @return \Stripe\Charge
+     * @return \Stripe\PaymentIntent
      */
-    private function getStripeCharge()
+    private function getStripePaymentIntent()
     {
         $attributes = [
-            'object' => 'charge',
-            'source' => [
-                'card' => [
-                    'brand' => 'Visa',
-                    'exp_month' => 07,
-                    'exp_year' => 29,
-                    'last4' => 1234,
-                ]
+            'object' => 'payment_intent',
+            'charges' => [
+                'object' => 'list',
+                'data' => [[
+                    'object' => 'charge',
+                    'payment_method_details' => [
+                        'card' => [
+                            'brand' => 'Visa',
+                            'exp_month' => 07,
+                            'exp_year' => 29,
+                            'last4' => 1234,
+                        ]
+                    ]
+                ]]
             ]
         ];
         

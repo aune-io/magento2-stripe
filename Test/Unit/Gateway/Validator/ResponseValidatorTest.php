@@ -122,16 +122,16 @@ class ResponseValidatorTest extends \PHPUnit\Framework\TestCase
     public function dataProviderTestValidate()
     {
         $successTrue = \Stripe\Util\Util::convertToStripeObject([
-            'object' => 'charge',
+            'object' => 'payment_intent',
             'status' => 'succeeded',
         ], []);
 
         $transactionDeclined = \Stripe\Util\Util::convertToStripeObject([
-            'object' => 'charge',
+            'object' => 'payment_intent',
             'status' => 'failed',
         ], []);
 
-        $errorResult = new \Stripe\Error\Authentication('');
+        $errorResult = new \Stripe\Exception\AuthenticationException('');
 
         return [
             [

@@ -6,6 +6,7 @@ use Magento\Vault\Api\Data\PaymentTokenInterface;
 use Magento\Vault\Model\Ui\TokenUiComponentInterface;
 use Magento\Vault\Model\Ui\TokenUiComponentProviderInterface;
 use Magento\Vault\Model\Ui\TokenUiComponentInterfaceFactory;
+use Aune\Stripe\Gateway\Config\Config;
 
 class TokenUiComponentProvider implements TokenUiComponentProviderInterface
 {
@@ -15,12 +16,20 @@ class TokenUiComponentProvider implements TokenUiComponentProviderInterface
     private $componentFactory;
 
     /**
+     * @var Config
+     */
+    private $config;
+
+    /**
      * @param TokenUiComponentInterfaceFactory $componentFactory
+     * @param Config $config
      */
     public function __construct(
-        TokenUiComponentInterfaceFactory $componentFactory
+        TokenUiComponentInterfaceFactory $componentFactory,
+        Config $config
     ) {
         $this->componentFactory = $componentFactory;
+        $this->config = $config;
     }
 
     /**
@@ -37,6 +46,7 @@ class TokenUiComponentProvider implements TokenUiComponentProviderInterface
             [
                 'config' => [
                     'code' => ConfigProvider::VAULT_CODE,
+                    'paymentIntentUrl' => $this->config->getPaymentIntentUrl(),
                     TokenUiComponentProviderInterface::COMPONENT_DETAILS => $jsonDetails,
                     TokenUiComponentProviderInterface::COMPONENT_PUBLIC_HASH => $paymentToken->getPublicHash()
                 ],

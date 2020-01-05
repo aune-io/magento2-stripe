@@ -94,7 +94,7 @@ class GeneralResponseValidatorTest extends \PHPUnit\Framework\TestCase
             'object' => 'charge',
         ], []);
 
-        $successFalse = new \Stripe\Error\Authentication('');
+        $errorResult = new \Stripe\Exception\AuthenticationException('');
 
         return [
             [

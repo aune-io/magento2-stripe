@@ -34,20 +34,22 @@ class RefundHandler implements HandlerInterface
         /** @var Payment $orderPayment */
         $orderPayment = $paymentDO->getPayment();
         
-        if ($orderPayment instanceof Payment) {
-            /** @var \Stripe\Refund $refund */
-            $refund = $this->subjectReader->readRefund($response);
-
-            $this->setRefundId(
-                $orderPayment,
-                $refund
-            );
-
-            $orderPayment->setIsTransactionClosed($this->shouldCloseTransaction());
-            $orderPayment->setShouldCloseParentTransaction(
-                $this->shouldCloseParentTransaction($orderPayment)
-            );
+        if (!($orderPayment instanceof Payment)) {
+            return;
         }
+
+        /** @var \Stripe\Refund $refund */
+        $refund = $this->subjectReader->readRefund($response);
+
+        $this->setRefundId(
+            $orderPayment,
+            $refund
+        );
+
+        $orderPayment->setIsTransactionClosed($this->shouldCloseTransaction());
+        $orderPayment->setShouldCloseParentTransaction(
+            $this->shouldCloseParentTransaction($orderPayment)
+        );
     }
 
     /**
@@ -77,12 +79,16 @@ class RefundHandler implements HandlerInterface
      *
      * @param Payment $orderPayment
      * @return bool
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function shouldCloseParentTransaction(Payment $orderPayment)
     {
         $creditmemo = $orderPayment->getCreditmemo();
-        if (!$creditmemo || !($invoice = $creditmemo->getInvoice())) {
+        if (!$creditmemo) {
+            return true;
+        }
+
+        $invoice = $creditmemo->getInvoice();
+        if (!$invoice) {
             return true;
         }
         

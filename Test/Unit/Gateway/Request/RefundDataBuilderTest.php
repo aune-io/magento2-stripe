@@ -82,15 +82,14 @@ class RefundDataBuilderTest extends \PHPUnit\Framework\TestCase
      */
     public function testBuildReadAmountException()
     {
-        $chargeId = rand();
+        $paymentIntent = rand();
         $expectedResult = [
-            RefundDataBuilder::CHARGE  => $chargeId,
+            RefundDataBuilder::PAYMENT_INTENT  => $paymentIntent,
             RefundDataBuilder::AMOUNT  => null,
         ];
         
         $buildSubject = [
             'payment' => $this->paymentDO,
-            'amount' => null
         ];
 
         $this->subjectReaderMock->expects(self::once())
@@ -113,7 +112,7 @@ class RefundDataBuilderTest extends \PHPUnit\Framework\TestCase
 
         $this->paymentMock->expects(static::once())
             ->method('getLastTransId')
-            ->willReturn($chargeId);
+            ->willReturn($paymentIntent);
 
         $this->orderMock->expects(static::once())
             ->method('getCurrencyCode')
@@ -130,15 +129,14 @@ class RefundDataBuilderTest extends \PHPUnit\Framework\TestCase
      */
     public function testBuildDecimal()
     {
-        $chargeId = rand();
+        $paymentIntent = rand();
         $expectedResult = [
-            RefundDataBuilder::CHARGE  => $chargeId,
+            RefundDataBuilder::PAYMENT_INTENT => $paymentIntent,
             RefundDataBuilder::AMOUNT  => 1000,
         ];
 
         $buildSubject = [
             'payment' => $this->paymentDO,
-            'amount' => 10.00,
         ];
 
         $this->paymentDO->expects(static::once())
@@ -161,7 +159,7 @@ class RefundDataBuilderTest extends \PHPUnit\Framework\TestCase
         
         $this->paymentMock->expects(static::once())
             ->method('getLastTransId')
-            ->willReturn($chargeId);
+            ->willReturn($paymentIntent);
 
         $this->orderMock->expects(static::once())
             ->method('getCurrencyCode')
@@ -178,16 +176,15 @@ class RefundDataBuilderTest extends \PHPUnit\Framework\TestCase
      */
     public function testBuildZeroDecimal()
     {
-        $chargeId = rand();
+        $paymentIntent = rand();
         
         $expectedResult = [
-            RefundDataBuilder::CHARGE  => $chargeId,
-            RefundDataBuilder::AMOUNT  => 1000,
+            RefundDataBuilder::PAYMENT_INTENT => $paymentIntent,
+            RefundDataBuilder::AMOUNT => 1000,
         ];
 
         $buildSubject = [
             'payment' => $this->paymentDO,
-            'amount' => 1000.00,
         ];
 
         $this->paymentDO->expects(static::once())
@@ -210,7 +207,7 @@ class RefundDataBuilderTest extends \PHPUnit\Framework\TestCase
         
         $this->paymentMock->expects(static::once())
             ->method('getLastTransId')
-            ->willReturn($chargeId);
+            ->willReturn($paymentIntent);
 
         $this->orderMock->expects(static::once())
             ->method('getCurrencyCode')

@@ -2,7 +2,10 @@
 
 namespace Aune\Stripe\Gateway\Response;
 
-use Stripe\Charge;
+use \DateTime;
+use \DateInterval;
+use \DateTimeZone;
+use Stripe\PaymentIntent;
 
 use Magento\Payment\Gateway\Response\HandlerInterface;
 use Magento\Payment\Model\InfoInterface;
@@ -64,11 +67,11 @@ class VaultDetailsHandler implements HandlerInterface
     public function handle(array $handlingSubject, array $response)
     {
         $paymentDO = $this->subjectReader->readPayment($handlingSubject);
-        $charge = $this->subjectReader->readCharge($response);
+        $paymentIntent = $this->subjectReader->readPaymentIntent($response);
         $payment = $paymentDO->getPayment();
 
         // add vault payment token entity to extension attributes
-        $paymentToken = $this->getVaultPaymentToken($charge);
+        $paymentToken = $this->getVaultPaymentToken($paymentIntent);
         if (null !== $paymentToken) {
             $extensionAttributes = $this->getExtensionAttributes($payment);
             $extensionAttributes->setVaultPaymentToken($paymentToken);
@@ -78,29 +81,32 @@ class VaultDetailsHandler implements HandlerInterface
     /**
      * Get vault payment token entity
      *
-     * @param \Stripe\Charge $charge
+     * @param \Stripe\PaymentIntent $paymentIntent
      * @return PaymentTokenInterface|null
      */
-    protected function getVaultPaymentToken(Charge $charge)
+    protected function getVaultPaymentToken(PaymentIntent $paymentIntent)
     {
         // Extract source id as token
-        $token = $charge->source->id;
+        $token = $paymentIntent->payment_method;
         if (empty($token)) {
             return null;
         }
-        
+
+        $charge = $paymentIntent->charges->data[0];
+        $card = $charge->payment_method_details->card;
+
         /** @var PaymentTokenInterface $paymentToken */
         $paymentToken = $this->paymentTokenFactory->create();
-        $expirationDate = $this->getExpirationDate($charge);
+        $expirationDate = $this->getExpirationDate($card);
         
         $paymentToken->setTokenDetails($this->convertDetailsToJSON([
             'tokenType' => TokenProvider::TOKEN_TYPE_SOURCE,
-            'type' => $this->getCreditCardType($charge->source->card->brand),
-            'maskedCC' => $charge->source->card->last4,
+            'type' => $this->getCreditCardType($card->brand),
+            'maskedCC' => $card->last4,
             'expirationDate' => $expirationDate->format('m/Y'),
         ]));
         
-        $expirationDate->add(new \DateInterval('P1M'));
+        $expirationDate->add(new DateInterval('P1M'));
 
         $paymentToken->setGatewayToken($token);
         $paymentToken->setExpiresAt($expirationDate->format('Y-m-d 00:00:00'));
@@ -109,13 +115,12 @@ class VaultDetailsHandler implements HandlerInterface
     }
 
     /**
-     * @param Charge $charge
+     * @param object $card
      * @return \DateTime
      */
-    private function getExpirationDate(Charge $charge)
+    private function getExpirationDate($card)
     {
-        $card = $charge->source->card;
-        return new \DateTime(
+        return new DateTime(
             $card->exp_year
             . '-'
             . $card->exp_month
@@ -123,7 +128,7 @@ class VaultDetailsHandler implements HandlerInterface
             . '01'
             . ' '
             . '00:00:00',
-            new \DateTimeZone('UTC')
+            new DateTimeZone('UTC')
         );
     }
 

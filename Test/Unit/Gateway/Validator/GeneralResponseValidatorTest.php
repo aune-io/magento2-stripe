@@ -91,7 +91,7 @@ class GeneralResponseValidatorTest extends \PHPUnit\Framework\TestCase
     public function dataProviderTestValidate()
     {
         $successTrue = \Stripe\Util\Util::convertToStripeObject([
-            'object' => 'charge',
+            'object' => 'payment_intent',
         ], []);
 
         $errorResult = new \Stripe\Exception\AuthenticationException('');
@@ -109,7 +109,7 @@ class GeneralResponseValidatorTest extends \PHPUnit\Framework\TestCase
             [
                 'validationSubject' => [
                     'response' => [
-                        'object' => $successFalse
+                        'object' => null,
                     ]
                 ],
                 'isValid' => false,

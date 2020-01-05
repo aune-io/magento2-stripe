@@ -14,7 +14,7 @@ class PaymentIntentCaptureTest extends \PHPUnit\Framework\TestCase
     const PAYMENT_INTENT_ID = 'pi_123';
 
     /**
-     * @var ChargeCapture
+     * @var PaymentIntentCapture
      */
     private $model;
 

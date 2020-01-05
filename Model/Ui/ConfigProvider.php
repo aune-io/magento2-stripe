@@ -5,7 +5,7 @@ namespace Aune\Stripe\Model\Ui;
 use Magento\Checkout\Model\ConfigProviderInterface;
 use Aune\Stripe\Gateway\Config\Config;
 
-final class ConfigProvider implements ConfigProviderInterface
+class ConfigProvider implements ConfigProviderInterface
 {
     const CODE       = 'aune_stripe';
     const VAULT_CODE = 'aune_stripe_vault';
